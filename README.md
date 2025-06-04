@@ -1,4 +1,6 @@
-# CausalPilot 🚁
+# CausalPilot
+
+![CausalPilot Logo](https://github.com/user-attachments/assets/7887c002-8653-4f8e-bdd1-0b96cd19f6fd)
 
 A comprehensive Python framework for causal inference testing with multiple estimators. CausalPilot provides a unified interface for causal effect estimation, comparison of different methods, and visualization of results.
 
