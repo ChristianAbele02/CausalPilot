@@ -1,0 +1,92 @@
+[flake8]
+# Configuration for flake8 linting in CausalPilot project
+# Compatible with Black formatter (88 character line length)
+
+max-line-length = 88
+extend-ignore = 
+    # E203: whitespace before ':' (conflicts with Black)
+    E203,
+    # W503: line break before binary operator (conflicts with Black)
+    W503,
+    # E501: line too long (handled by Black)
+    E501,
+    # F401: imported but unused (common in __init__.py files)
+    F401
+
+exclude = 
+    # Standard Python excludes
+    __pycache__,
+    *.pyc,
+    .git,
+    .tox,
+    .eggs,
+    *.egg-info,
+    build,
+    dist,
+    
+    # Virtual environments
+    .venv,
+    venv,
+    env,
+    ENV,
+    
+    # IDE and editor files
+    .vscode,
+    .idea,
+    *.swp,
+    *.swo,
+    
+    # Jupyter checkpoints
+    .ipynb_checkpoints,
+    
+    # Documentation builds
+    docs/_build,
+    docs/build,
+    
+    # Test and coverage files
+    .pytest_cache,
+    .coverage,
+    htmlcov,
+    
+    # Data and model directories
+    datasets,
+    models,
+    checkpoints,
+    results,
+    outputs,
+    
+    # Temporary directories
+    tmp,
+    temp,
+    scratch
+
+# File patterns to exclude
+filename = 
+    # Migration-like files
+    */migrations/*.py,
+    # Auto-generated files
+    *_pb2.py,
+    # Version files
+    _version.py
+
+# Specific rules for different file types
+per-file-ignores =
+    # __init__.py files can have unused imports
+    __init__.py:F401,F403,
+    # Test files can have longer lines and unused imports
+    test_*.py:E501,F401,F811,
+    tests/*.py:E501,F401,F811,
+    # Setup files can have longer lines
+    setup.py:E501,
+    # Scripts can be more lenient
+    scripts/*.py:E501,
+    # Notebooks converted to py files
+    *.ipynb:E501,W292,E402
+
+# Complexity settings
+max-complexity = 10
+max-doc-length = 100
+
+# Import order settings (compatible with isort)
+import-order-style = google
+application-import-names = causalpilot
