@@ -69,6 +69,43 @@ comparison = model.compare_estimators(['doubleml', 'causal_forest', 't_learner']
 print(comparison)
 ```
 
+## 📥 Using Your Own Data
+
+You can use your own dataset with CausalPilot by following these steps:
+
+1. **Prepare your data** as a pandas DataFrame (e.g., from CSV, Excel, or SQL).
+2. **Ensure your data includes** columns for treatment, outcome, and covariates (features).
+3. **Load your data** and use it with CausalPilot just like the example datasets.
+
+```python
+import pandas as pd
+import causalpilot as cp
+
+# Load your own data
+data = pd.read_csv('your_data.csv')
+
+# Create a causal graph (customize as needed)
+graph = cp.CausalGraph()
+graph.add_nodes(['treatment', 'outcome', 'confounder'])
+graph.add_edge('treatment', 'outcome')
+graph.add_edge('confounder', 'treatment')
+graph.add_edge('confounder', 'outcome')
+
+# Create and fit the model
+model = cp.CausalModel(
+    data=data,
+    treatment='treatment',
+    outcome='outcome',
+    graph=graph
+)
+
+# Estimate causal effect
+effect = model.estimate_effect(method='doubleml')
+print(f"Estimated ATE: {effect:.3f}")
+```
+
+See the [notebooks](notebooks/) for more advanced examples and tips.
+
 ## 📊 Supported Estimators
 
 | Method | Description | Best For |
