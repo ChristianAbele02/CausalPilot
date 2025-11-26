@@ -5,7 +5,7 @@ Functions for generating synthetic data and testing estimators
 
 import numpy as np
 import pandas as pd
-from typing import Dict, Any, Optional, Tuple
+from typing import Dict, Any, Optional, Tuple, List
 import warnings
 
 
