@@ -123,7 +123,7 @@ def evaluate_performance(results: Dict[str, Any],
             if metric in result:
                 row[metric] = result[metric]
             else:
-                row[metric] = np.nan
+                row[metric] = float('nan')
         
         comparison_data.append(row)
     

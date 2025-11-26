@@ -41,7 +41,7 @@ class TLearner(BaseEstimator):
             random_state=random_state
         )
         
-        def _resolve_model(model):
+        def _resolve_model(model: Optional[Any]) -> Any:
             if model is None:
                 return RandomForestRegressor(random_state=self.config.random_state)
             if isinstance(model, type):
@@ -50,13 +50,13 @@ class TLearner(BaseEstimator):
         self.base_estimator = _resolve_model(self.config.base_estimator)
 
         # Models for treatment and control
-        self.model_treatment = None
-        self.model_control = None
+        self.model_treatment: Optional[Any] = None
+        self.model_control: Optional[Any] = None
         
         # Results
-        self.individual_effects = None
-        self.average_effect = None
-        self.is_fitted = False
+        self.individual_effects: Optional[np.ndarray] = None
+        self.average_effect: Optional[float] = None
+        self.is_fitted: bool = False
     
     def fit(self, X: pd.DataFrame, T: pd.Series, Y: pd.Series) -> 'TLearner':
         """
@@ -118,6 +118,9 @@ class TLearner(BaseEstimator):
         
         X_array = X.values if isinstance(X, pd.DataFrame) else X
         
+        if self.model_treatment is None or self.model_control is None:
+            raise RuntimeError("Models not fitted")
+
         # Get predictions from both models
         y1_pred = self.model_treatment.predict(X_array)
         y0_pred = self.model_control.predict(X_array)
@@ -144,7 +147,7 @@ class TLearner(BaseEstimator):
                 raise ValueError("X must be provided if predict() hasn't been called yet")
             self.predict(X)
         
-        self.average_effect = np.mean(self.individual_effects)
+        self.average_effect = float(np.mean(self.individual_effects))
         return self.average_effect
     
     def get_results(self) -> Dict[str, Any]:

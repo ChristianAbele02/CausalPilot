@@ -264,9 +264,10 @@ def visualize_radar_comparison(results: Dict[str, Any], metrics: Optional[List[s
     
     # Get valid metrics that exist in results
     valid_metrics = []
-    for metric in metrics:
-        if any(metric in result for result in results.values() if 'error' not in result):
-            valid_metrics.append(metric)
+    if metrics is not None:
+        for metric in metrics:
+            if any(metric in result for result in results.values() if 'error' not in result):
+                valid_metrics.append(metric)
     
     if not valid_metrics:
         print("No valid metrics found for radar chart")

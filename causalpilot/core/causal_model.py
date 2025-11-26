@@ -123,7 +123,7 @@ class CausalModel:
     
     def estimate_effect(self, 
                        method: str = 'doubleml', 
-                       **kwargs) -> Dict[str, Any]:
+                       **kwargs: Any) -> Dict[str, Any]:
         """
         Estimate the causal effect using specified method.
         

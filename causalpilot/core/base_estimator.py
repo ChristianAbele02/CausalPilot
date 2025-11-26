@@ -11,7 +11,7 @@ class BaseEstimator(ABC):
     """
     
     @abstractmethod
-    def fit(self, X: pd.DataFrame, T: pd.Series, Y: pd.Series, **kwargs) -> None:
+    def fit(self, X: pd.DataFrame, T: pd.Series, Y: pd.Series, **kwargs) -> Any:
         """
         Fit the estimator to the data.
         

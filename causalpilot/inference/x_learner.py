@@ -54,7 +54,7 @@ class XLearner(BaseEstimator):
             random_state=random_state
         )
         
-        def _resolve_model(model, default_class):
+        def _resolve_model(model: Optional[Any], default_class: Any) -> Any:
             if model is None:
                 return default_class(random_state=self.config.random_state)
             if isinstance(model, type):
@@ -66,15 +66,15 @@ class XLearner(BaseEstimator):
         self.propensity_learner = _resolve_model(self.config.propensity_learner, RandomForestClassifier)
         
         # Models
-        self.mu0 = None
-        self.mu1 = None
-        self.tau0 = None
-        self.tau1 = None
-        self.g = None
+        self.mu0: Optional[Any] = None
+        self.mu1: Optional[Any] = None
+        self.tau0: Optional[Any] = None
+        self.tau1: Optional[Any] = None
+        self.g: Optional[Any] = None
         
-        self.is_fitted = False
-        self.individual_effects = None
-        self.average_effect = None
+        self.is_fitted: bool = False
+        self.individual_effects: Optional[np.ndarray] = None
+        self.average_effect: Optional[float] = None
 
     def fit(self, X: pd.DataFrame, T: pd.Series, Y: pd.Series) -> 'XLearner':
         """Fit the X-Learner."""
@@ -98,6 +98,9 @@ class XLearner(BaseEstimator):
         # Step 2: Impute counterfactuals and compute imputed effects
         # D1 = Y1 - mu0(X1)
         # D0 = mu1(X0) - Y0
+        if self.mu0 is None or self.mu1 is None:
+            raise RuntimeError("Models not initialized")
+            
         D1 = Y1 - self.mu0.predict(X1)
         D0 = self.mu1.predict(X0) - Y0
         
@@ -118,6 +121,9 @@ class XLearner(BaseEstimator):
             
         X_arr = X.values if isinstance(X, pd.DataFrame) else X
         
+        if self.g is None or self.tau0 is None or self.tau1 is None:
+            raise RuntimeError("Models not fitted")
+
         # Get propensity scores
         g_x = self.g.predict_proba(X_arr)[:, 1]
         
@@ -139,5 +145,5 @@ class XLearner(BaseEstimator):
                 raise ValueError("X must be provided")
             self.predict(X)
             
-        self.average_effect = np.mean(self.individual_effects)
+        self.average_effect = float(np.mean(self.individual_effects))
         return self.average_effect

@@ -40,19 +40,19 @@ class SLearner(BaseEstimator):
             random_state=random_state
         )
         
-        def _resolve_model(model):
+        def _resolve_model(model: Optional[Any]) -> Any:
             if model is None:
                 return RandomForestRegressor(random_state=self.config.random_state)
             if isinstance(model, type):
                 return model(random_state=self.config.random_state)
             return model
         self.base_estimator = _resolve_model(self.config.base_estimator)
-        self.model = None
+        self.model: Optional[Any] = None
         
         # Results
-        self.individual_effects = None
-        self.average_effect = None
-        self.is_fitted = False
+        self.individual_effects: Optional[np.ndarray] = None
+        self.average_effect: Optional[float] = None
+        self.is_fitted: bool = False
     
     def fit(self, X: pd.DataFrame, T: pd.Series, Y: pd.Series) -> 'SLearner':
         """
@@ -98,6 +98,9 @@ class SLearner(BaseEstimator):
         
         X_array = X.values if isinstance(X, pd.DataFrame) else X
         
+        if self.model is None:
+            raise RuntimeError("Model not fitted")
+
         # Predict with treatment = 1
         X_T1 = np.column_stack([X_array, np.ones(len(X_array))])
         y1_pred = self.model.predict(X_T1)
@@ -128,7 +131,7 @@ class SLearner(BaseEstimator):
                 raise ValueError("X must be provided if predict() hasn't been called yet")
             self.predict(X)
         
-        self.average_effect = np.mean(self.individual_effects)
+        self.average_effect = float(np.mean(self.individual_effects))
         return self.average_effect
     
     def get_results(self) -> Dict[str, Any]:

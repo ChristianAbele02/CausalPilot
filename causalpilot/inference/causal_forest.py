@@ -159,7 +159,7 @@ class CausalForest(BaseEstimator):
                 self.n_treated = 0
                 self.n_control = 0
         
-        def build_tree(indices_tree, indices_honest, depth=0):
+        def build_tree(indices_tree: np.ndarray, indices_honest: np.ndarray, depth: int = 0) -> CausalTreeNode:
             node = CausalTreeNode()
             
             # Get current data
@@ -298,7 +298,7 @@ class CausalForest(BaseEstimator):
     
     def _calculate_split_score(self, T_parent: np.ndarray, Y_parent: np.ndarray, T_left: np.ndarray, Y_left: np.ndarray, T_right: np.ndarray, Y_right: np.ndarray) -> float:
         """Calculate the score for a potential split."""
-        def variance_reduction(T, Y):
+        def variance_reduction(T: np.ndarray, Y: np.ndarray) -> float:
             if len(T) == 0:
                 return 0
             

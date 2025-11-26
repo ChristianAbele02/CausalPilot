@@ -19,8 +19,8 @@ class CausalGraph:
     def __init__(self) -> None:
         """Initialize an empty directed graph."""
         self.graph = nx.DiGraph()
-        self.node_metadata = {}
-        self.edge_metadata = {}
+        self.node_metadata: Dict[str, Dict[str, Any]] = {}
+        self.edge_metadata: Dict[Tuple[str, str], Dict[str, Any]] = {}
     
     def add_nodes(self, nodes: List[str]) -> None:
         """

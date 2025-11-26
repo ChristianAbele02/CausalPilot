@@ -51,11 +51,11 @@ class IV2SLS(BaseEstimator):
         self.stage1_model = LinearRegression(fit_intercept=self.config.fit_intercept)
         self.stage2_model = LinearRegression(fit_intercept=self.config.fit_intercept)
         
-        self.effect_estimate = None
-        self.standard_error = None
-        self.is_fitted = False
+        self.effect_estimate: Optional[float] = None
+        self.standard_error: Optional[float] = None
+        self.is_fitted: bool = False
         
-    def fit(self, X: pd.DataFrame, T: pd.Series, Y: pd.Series, Z: Optional[pd.Series] = None, **kwargs) -> 'IV2SLS':
+    def fit(self, X: pd.DataFrame, T: pd.Series, Y: pd.Series, Z: Optional[pd.Series] = None, **kwargs: Any) -> 'IV2SLS':
         """
         Fit the IV2SLS estimator.
         
@@ -99,7 +99,7 @@ class IV2SLS(BaseEstimator):
         
         return self
     
-    def _bootstrap_se(self, X, T, Y, Z):
+    def _bootstrap_se(self, X: np.ndarray, T: np.ndarray, Y: np.ndarray, Z: np.ndarray) -> None:
         """Calculate standard errors using bootstrap."""
         n_samples = len(Y)
         rng = np.random.RandomState(self.config.random_state)
@@ -127,7 +127,9 @@ class IV2SLS(BaseEstimator):
         """
         if not self.is_fitted:
             raise RuntimeError("Model must be fitted before estimating effect")
-        return self.effect_estimate
+        if self.effect_estimate is None:
+             raise RuntimeError("Model must be fitted before estimating effect")
+        return float(self.effect_estimate)
     
     def __str__(self) -> str:
         return f"IV2SLS(bootstrap={self.config.n_bootstrap})"

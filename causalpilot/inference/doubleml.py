@@ -63,9 +63,9 @@ class DoubleML(BaseEstimator):
         self.ml_l = _resolve_model(self.config.ml_l, RandomForestRegressor)
         self.ml_m = _resolve_model(self.config.ml_m, RandomForestClassifier)
         
-        # Model storage
-        self.models_l = []
-        self.models_m = []
+        # Models
+        self.models_l: List[Any] = []
+        self.models_m: List[Any] = []
         
         # Results storage
         # Results storage
@@ -277,7 +277,7 @@ class DoubleML(BaseEstimator):
         if self.effect_estimate is None:
              # Should not happen if estimate_effect is called, but for safety
              return np.zeros(len(X_new))
-        return np.full(len(X_new), self.effect_estimate)
+        return np.full(len(X_new), self.effect_estimate).astype(float)
     
     def predict(self, X: pd.DataFrame) -> np.ndarray:
         """
@@ -297,7 +297,7 @@ class DoubleML(BaseEstimator):
 
         if self.effect_estimate is None:
              return np.zeros(len(X))
-        return np.full(len(X), self.effect_estimate)
+        return np.full(len(X), self.effect_estimate).astype(float)
 
     def __str__(self) -> str:
         """String representation of the estimator."""
