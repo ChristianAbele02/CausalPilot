@@ -34,7 +34,7 @@ class CausalGraph:
             if node not in self.node_metadata:
                 self.node_metadata[node] = {}
     
-    def add_node(self, node: str, **metadata) -> None:
+    def add_node(self, node: str, **metadata: Any) -> None:
         """
         Add a single node to the graph.
         
@@ -45,7 +45,7 @@ class CausalGraph:
         self.graph.add_node(node)
         self.node_metadata[node] = metadata
     
-    def add_edge(self, source: str, target: str, **metadata) -> None:
+    def add_edge(self, source: str, target: str, **metadata: Any) -> None:
         """
         Add an edge to the graph with cycle detection.
         

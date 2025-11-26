@@ -13,7 +13,7 @@ import warnings
 def load_ihdp(cache_dir: Optional[str] = None, 
              version: str = 'npci',
              download_if_missing: bool = True,
-             seed: int = 42) -> Tuple[pd.DataFrame, pd.Series, pd.Series]:
+             seed: int = 42) -> pd.DataFrame:
     """
     Load the Infant Health and Development Program (IHDP) dataset.
     
@@ -45,7 +45,7 @@ def load_ihdp(cache_dir: Optional[str] = None,
         return pd.read_csv(cache_path)
     
     # Data not in cache, check if download is allowed
-    if not download:
+    if not download_if_missing:
         raise FileNotFoundError(f"IHDP data not found in cache: {cache_path}")
     
     # Since we don't have direct download capability, generate synthetic data
@@ -57,6 +57,11 @@ def load_ihdp(cache_dir: Optional[str] = None,
     data.to_csv(cache_path, index=False)
     print(f"Saved IHDP data to cache: {cache_path}")
     
+    # Return X, T, Y tuple format as expected by some tests, or just data?
+    # The return type annotation says Tuple[pd.DataFrame, pd.Series, pd.Series]
+    # But the code returns 'data' which is a DataFrame.
+    # I should change the return type to pd.DataFrame to match implementation and other datasets
+    # OR split it. Given other datasets return DataFrame, I will change the annotation.
     return data
 
 

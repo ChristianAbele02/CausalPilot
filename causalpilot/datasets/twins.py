@@ -121,7 +121,7 @@ def _generate_synthetic_twins(seed: int = 42) -> pd.DataFrame:
     
     # Generate mortality outcomes based on weight
     # Very low birth weight has higher mortality risk
-    def mortality_risk(weight):
+    def mortality_risk(weight: float) -> float:
         """Calculate mortality risk based on birth weight."""
         # Higher risk for very low birth weight
         if weight < 1500:

@@ -45,7 +45,7 @@ def load_lalonde(cache_dir: Optional[str] = None,
         return pd.read_csv(cache_path)
     
     # Data not in cache, check if download is allowed
-    if not download:
+    if not download_if_missing:
         raise FileNotFoundError(f"LaLonde data not found in cache: {cache_path}")
     
     # Since we don't have direct download capability, generate synthetic data

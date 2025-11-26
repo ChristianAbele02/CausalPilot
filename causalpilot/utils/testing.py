@@ -126,11 +126,11 @@ def generate_ihdp_synthetic(n_samples: int = 747,
     }
 
 
-def run_simulation(estimator_class,
+def run_simulation(estimator_class: Any,
                   n_simulations: int = 100,
                   n_samples: int = 1000,
                   true_effect: float = 2.0,
-                  **estimator_kwargs) -> Dict[str, Any]:
+                  **estimator_kwargs: Any) -> Dict[str, Any]:
     """
     Run simulation study for an estimator.
     
@@ -175,30 +175,30 @@ def run_simulation(estimator_class,
     if successful_runs == 0:
         return {'error': 'All simulations failed'}
     
-    estimates = np.array(estimates)
+    estimates_array = np.array(estimates)
     
     # Calculate metrics
-    bias = np.mean(estimates) - true_effect
-    mse = np.mean((estimates - true_effect)**2)
-    variance = np.var(estimates)
+    bias = np.mean(estimates_array) - true_effect
+    mse = np.mean((estimates_array - true_effect)**2)
+    variance = np.var(estimates_array)
     coverage = None  # Would need confidence intervals for this
     
     return {
         'n_simulations': successful_runs,
-        'estimates': estimates,
-        'mean_estimate': np.mean(estimates),
+        'estimates': estimates_array,
+        'mean_estimate': np.mean(estimates_array),
         'true_effect': true_effect,
         'bias': bias,
         'mse': mse,
         'variance': variance,
-        'std': np.std(estimates),
+        'std': np.std(estimates_array),
         'coverage': coverage
     }
 
 
-def test_estimator_properties(estimator_class,
+def test_estimator_properties(estimator_class: Any,
                              test_scenarios: Optional[Dict[str, Any]] = None,
-                             **estimator_kwargs) -> Dict[str, Any]:
+                             **estimator_kwargs: Any) -> Dict[str, Any]:
     """
     Test properties of an estimator across different scenarios.
     
@@ -269,16 +269,16 @@ def test_estimator_properties(estimator_class,
 
 def check_estimator_consistency(estimator_class: Any,
                               n_runs: int = 5,
-                              n_samples: int = 500,
+                              sample_sizes: Optional[List[int]] = None,
                               true_effect: float = 2.0,
-                              **estimator_kwargs) -> Dict[str, Any]:
+                              **estimator_kwargs: Any) -> Dict[str, Any]:
     """
     Evaluate how estimator performance changes with sample size.
     
     Args:
         estimator_class: Class of the estimator to test
+        n_runs: Number of simulations per sample size
         sample_sizes: List of sample sizes to test
-        n_simulations: Number of simulations per sample size
         true_effect: True treatment effect
         **estimator_kwargs: Parameters for the estimator
         
@@ -296,7 +296,7 @@ def check_estimator_consistency(estimator_class: Any,
         # Run simulations for this sample size
         simulation_results = run_simulation(
             estimator_class=estimator_class,
-            n_simulations=n_simulations,
+            n_simulations=n_runs,
             n_samples=n_samples,
             true_effect=true_effect,
             **estimator_kwargs

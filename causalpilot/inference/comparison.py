@@ -15,7 +15,7 @@ def compare_estimators(X: pd.DataFrame,
                       Y: pd.Series,
                       methods: Optional[List[str]] = None,
                       true_ate: Optional[float] = None,
-                      **kwargs) -> Dict[str, Any]:
+                      **kwargs: Any) -> Dict[str, Any]:
     """
     Compare multiple causal inference estimators on the same dataset.
     
@@ -225,7 +225,7 @@ def bootstrap_comparison(X: pd.DataFrame,
                         methods: Optional[List[str]] = None,
                         n_bootstrap: int = 100,
                         sample_fraction: float = 0.8,
-                        **kwargs) -> Dict[str, Any]:
+                        **kwargs: Any) -> Dict[str, Any]:
     """
     Compare methods using bootstrap sampling to assess stability.
     

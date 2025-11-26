@@ -52,7 +52,7 @@ class DoubleML(BaseEstimator):
             random_state=random_state
         )
         
-        def _resolve_model(model, default_class):
+        def _resolve_model(model: Any, default_class: Any) -> Any:
             if model is None:
                 return default_class(n_estimators=100, random_state=self.config.random_state)
             if isinstance(model, type):
@@ -126,8 +126,10 @@ class DoubleML(BaseEstimator):
                 t_pred = model_m.predict(X_test)
             
             # Compute residuals
-            self.residuals_y[test_idx] = Y_test - y_pred
-            self.residuals_t[test_idx] = T_test - t_pred
+            if self.residuals_y is not None:
+                self.residuals_y[test_idx] = Y_test - y_pred
+            if self.residuals_t is not None:
+                self.residuals_t[test_idx] = T_test - t_pred
             
             # Store models
             self.models_l.append(model_l)
@@ -221,6 +223,10 @@ class DoubleML(BaseEstimator):
         from scipy.stats import norm
         z_critical = norm.ppf(1 - alpha/2)
         
+        # Handle None values
+        if self.effect_estimate is None or self.standard_error is None:
+             raise RuntimeError("Could not calculate effect or standard error")
+
         margin_error = z_critical * self.standard_error
         
         return {
@@ -247,12 +253,14 @@ class DoubleML(BaseEstimator):
         
         ci = self.confidence_interval()
         
+        n_obs = len(self.residuals_y) if self.residuals_y is not None else 0
+
         return {
             'ate': self.effect_estimate,
             'standard_error': self.standard_error,
             'confidence_interval': ci,
             'n_folds': self.config.n_folds,
-            'n_observations': len(self.residuals_y),
+            'n_observations': n_obs,
             'method': 'DoubleML'
         }
     

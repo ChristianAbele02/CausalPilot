@@ -65,7 +65,7 @@ def validate_data(data: pd.DataFrame,
     Raises:
         ValueError: If data is invalid for causal inference
     """
-    validation_results = {
+    validation_results: Dict[str, Any] = {
         'valid': True,
         'warnings': [],
         'errors': []
@@ -156,7 +156,7 @@ def validate_graph(graph: Any) -> Dict[str, Any]:
     Returns:
         Dictionary with validation results
     """
-    validation_results = {
+    validation_results: Dict[str, Any] = {
         'valid': True,
         'warnings': [],
         'errors': []
@@ -264,7 +264,7 @@ def check_backdoor_path(graph: Any, treatment: str, outcome: str) -> Dict[str, A
     common_causes = check_common_causes(G, treatment, outcome)
     
     # Create result
-    result = {
+    result: Dict[str, Any] = {
         'has_backdoor_paths': len(common_causes) > 0,
         'common_causes': common_causes
     }
@@ -293,7 +293,7 @@ def check_backdoor_path(graph: Any, treatment: str, outcome: str) -> Dict[str, A
     return result
 
 
-def check_instrument_validity(graph, instrument: str, treatment: str, outcome: str) -> Dict[str, bool]:
+def check_instrument_validity(graph: Any, instrument: str, treatment: str, outcome: str) -> Dict[str, bool]:
     """
     Check if a variable is a valid instrument.
     
