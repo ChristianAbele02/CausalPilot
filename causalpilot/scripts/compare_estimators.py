@@ -12,6 +12,7 @@ import numpy as np
 import os
 import time
 import json
+from typing import Dict, List, Any, Optional
 from datetime import datetime
 import matplotlib.pyplot as plt
 
@@ -22,7 +23,7 @@ from causalpilot.inference.comparison import plot_method_comparison, plot_effect
 from causalpilot.visualization import plot_causal_graph, plot_treatment_effects
 
 
-def parse_args():
+def parse_args() -> argparse.Namespace:
     """Parse command line arguments."""
     parser = argparse.ArgumentParser(description='Compare causal inference methods.')
     parser.add_argument('--config', type=str, default=None,
@@ -57,7 +58,7 @@ def parse_args():
     return parser.parse_args()
 
 
-def load_datasets(args):
+def load_datasets(args: argparse.Namespace) -> Dict[str, Any]:
     """Load dataset(s) based on arguments."""
     datasets = {}
     
@@ -129,7 +130,7 @@ def load_datasets(args):
     return datasets
 
 
-def get_methods(args):
+def get_methods(args: argparse.Namespace) -> List[str]:
     """Get methods to use based on arguments."""
     if args.methods == 'all':
         return ['doubleml', 'causal_forest', 't_learner', 's_learner']
@@ -137,12 +138,12 @@ def get_methods(args):
         return [m.strip() for m in args.methods.split(',')]
 
 
-def get_metrics(args):
+def get_metrics(args: argparse.Namespace) -> List[str]:
     """Get metrics to compare based on arguments."""
     return [m.strip() for m in args.metrics.split(',')]
 
 
-def main():
+def main() -> None:
     """Main function to compare causal inference methods."""
     # Parse arguments
     args = parse_args()
@@ -305,13 +306,7 @@ def main():
             
             # Plot radar chart
             if args.vis_type in ['all', 'radar']:
-                radar_path = os.path.join(args.output_dir, f"radar_{dataset_name}_{timestamp}.png")
-                try:
-                    from causalpilot.inference.comparison import plot_method_comparison_radar
-                    plot_method_comparison_radar(comp_results, metrics=metrics, save_path=radar_path)
-                    print(f"Saved radar chart to {radar_path}")
-                except Exception as e:
-                    print(f"Failed to save radar chart: {e}")
+                print("Radar chart not supported in this version.")
         
         # Print summary of results
         print("\nResults Summary:")

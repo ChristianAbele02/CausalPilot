@@ -43,7 +43,7 @@ class Refutation:
             Dictionary containing refutation results
         """
         np.random.seed(random_state)
-        refutation_results = []
+        results_list: List[float] = []
         
         for i in range(n_simulations):
             # Create placebo treatment (random permutation of original treatment)
@@ -67,11 +67,11 @@ class Refutation:
             try:
                 new_estimator.fit(X, placebo_T_series, self.model.data[self.model.outcome])
                 effect = new_estimator.estimate_effect(X)
-                refutation_results.append(effect)
+                results_list.append(effect)
             except Exception as e:
                 logger.warning(f"Refutation simulation {i} failed: {e}")
                 
-        refutation_results = np.array(refutation_results)
+        refutation_results = np.array(results_list)
         
         return {
             "method": "Placebo Treatment",
@@ -96,7 +96,7 @@ class Refutation:
             Dictionary containing refutation results
         """
         np.random.seed(random_state)
-        refutation_results = []
+        results_list: List[float] = []
         
         for i in range(n_simulations):
             # Create random common cause
@@ -117,11 +117,11 @@ class Refutation:
             try:
                 new_estimator.fit(X, self.model.data[self.model.treatment], self.model.data[self.model.outcome])
                 effect = new_estimator.estimate_effect(X)
-                refutation_results.append(effect)
+                results_list.append(effect)
             except Exception as e:
                 logger.warning(f"Refutation simulation {i} failed: {e}")
                 
-        refutation_results = np.array(refutation_results)
+        refutation_results = np.array(results_list)
         
         return {
             "method": "Random Common Cause",
@@ -146,4 +146,4 @@ class Refutation:
         # Let's return the p-value of the mean being different from the target
         from scipy import stats
         t_stat, p_val = stats.ttest_1samp(distribution, target)
-        return p_val
+        return float(p_val)

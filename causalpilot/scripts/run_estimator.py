@@ -11,6 +11,7 @@ import numpy as np
 import os
 import time
 import json
+from typing import Dict, List, Any, Optional
 from datetime import datetime
 
 from causalpilot.core import CausalGraph, CausalModel
@@ -19,7 +20,7 @@ from causalpilot.inference.comparison import compare_estimators
 from causalpilot.visualization import plot_causal_graph, plot_treatment_effects
 
 
-def parse_args():
+def parse_args() -> argparse.Namespace:
     """Parse command line arguments."""
     parser = argparse.ArgumentParser(description='Train causal inference models.')
     parser.add_argument('--config', type=str, default=None,
@@ -45,7 +46,7 @@ def parse_args():
     return parser.parse_args()
 
 
-def load_dataset(args):
+def load_dataset(args: argparse.Namespace) -> pd.DataFrame:
     """Load dataset based on arguments."""
     if args.dataset == 'ihdp':
         from causalpilot.datasets.ihdp import load_ihdp
@@ -80,7 +81,7 @@ def load_dataset(args):
     return data
 
 
-def load_or_create_graph(args, data):
+def load_or_create_graph(args: argparse.Namespace, data: pd.DataFrame) -> CausalGraph:
     """Load or create causal graph based on arguments."""
     if args.graph_path is not None:
         # Load graph from file (implementation depends on format)
@@ -112,7 +113,7 @@ def load_or_create_graph(args, data):
     return graph
 
 
-def get_methods(args):
+def get_methods(args: argparse.Namespace) -> List[str]:
     """Get methods to use based on arguments."""
     if args.methods == 'all':
         return ['doubleml', 'causal_forest', 't_learner', 's_learner']
@@ -120,7 +121,7 @@ def get_methods(args):
         return [m.strip() for m in args.methods.split(',')]
 
 
-def main():
+def main() -> None:
     """Main function to train and evaluate causal inference models."""
     # Parse arguments
     args = parse_args()

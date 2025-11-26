@@ -151,7 +151,7 @@ class CausalModel:
         else:
             raise ValueError(f"Unknown estimation method: {method}")
     
-    def _estimate_doubleml(self, X, T, Y, **kwargs) -> Dict[str, Any]:
+    def _estimate_doubleml(self, X: pd.DataFrame, T: pd.Series, Y: pd.Series, **kwargs: Any) -> Dict[str, Any]:
         """Estimate effect using DoubleML."""
         from ..inference.doubleml import DoubleML
         
@@ -178,7 +178,7 @@ class CausalModel:
             'adjustment_set': self.adjustment_set
         }
     
-    def _estimate_causal_forest(self, X, T, Y, **kwargs) -> Dict[str, Any]:
+    def _estimate_causal_forest(self, X: pd.DataFrame, T: pd.Series, Y: pd.Series, **kwargs: Any) -> Dict[str, Any]:
         """Estimate effect using Causal Forest."""
         from ..inference.causal_forest import CausalForest
         
@@ -203,7 +203,7 @@ class CausalModel:
             'adjustment_set': self.adjustment_set
         }
     
-    def _estimate_t_learner(self, X, T, Y, **kwargs) -> Dict[str, Any]:
+    def _estimate_t_learner(self, X: pd.DataFrame, T: pd.Series, Y: pd.Series, **kwargs: Any) -> Dict[str, Any]:
         """Estimate effect using T-Learner."""
         from ..inference.t_learner import TLearner
         
@@ -221,7 +221,7 @@ class CausalModel:
             'adjustment_set': self.adjustment_set
         }
     
-    def _estimate_s_learner(self, X, T, Y, **kwargs) -> Dict[str, Any]:
+    def _estimate_s_learner(self, X: pd.DataFrame, T: pd.Series, Y: pd.Series, **kwargs: Any) -> Dict[str, Any]:
         """Estimate effect using S-Learner."""
         from ..inference.s_learner import SLearner
         
@@ -240,8 +240,8 @@ class CausalModel:
         }
     
     def compare_estimators(self, 
-                          methods: List[str] = None, 
-                          **kwargs) -> Dict[str, Any]:
+                          methods: Optional[List[str]] = None, 
+                          **kwargs: Any) -> Dict[str, Any]:
         """
         Compare multiple estimation methods on the same data.
         

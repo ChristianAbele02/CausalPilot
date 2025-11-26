@@ -11,6 +11,7 @@ import pandas as pd
 import numpy as np
 import os
 import json
+from typing import Dict, List, Any, Optional
 import glob
 import matplotlib.pyplot as plt
 from datetime import datetime
@@ -18,10 +19,10 @@ from datetime import datetime
 from causalpilot.core import CausalGraph, CausalModel
 from causalpilot.visualization import plot_causal_graph, plot_treatment_effects
 from causalpilot.inference.comparison import plot_method_comparison, plot_effect_distributions
-from causalpilot.inference.comparison import plot_method_comparison_radar
 
 
-def parse_args():
+
+def parse_args() -> argparse.Namespace:
     """Parse command line arguments."""
     parser = argparse.ArgumentParser(description='Visualize causal inference results.')
     parser.add_argument('--results_path', type=str, default=None,
@@ -52,7 +53,7 @@ def parse_args():
     return parser.parse_args()
 
 
-def load_results(args):
+def load_results(args: argparse.Namespace) -> Dict[str, Any]:
     """Load results based on arguments."""
     all_results = {}
     
@@ -92,12 +93,12 @@ def load_results(args):
     return all_results
 
 
-def get_metrics(args):
+def get_metrics(args: argparse.Namespace) -> List[str]:
     """Get metrics to visualize based on arguments."""
     return [m.strip() for m in args.metrics.split(',')]
 
 
-def create_comparison_dataframe(all_results, metrics):
+def create_comparison_dataframe(all_results: Dict[str, Any], metrics: List[str]) -> pd.DataFrame:
     """Create a DataFrame for comparing results across datasets and methods."""
     rows = []
     
@@ -121,7 +122,7 @@ def create_comparison_dataframe(all_results, metrics):
     return pd.DataFrame(rows)
 
 
-def visualize_method_comparison(results, metrics, args, dataset_name=None):
+def visualize_method_comparison(results: Dict[str, Any], metrics: List[str], args: argparse.Namespace, dataset_name: Optional[str] = None) -> None:
     """Create bar charts comparing methods across metrics."""
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     
@@ -187,7 +188,7 @@ def visualize_method_comparison(results, metrics, args, dataset_name=None):
         plt.close()
 
 
-def visualize_dataset_comparison(comparison_df, metrics, args):
+def visualize_dataset_comparison(comparison_df: pd.DataFrame, metrics: List[str], args: argparse.Namespace) -> None:
     """Create bar charts comparing datasets across methods and metrics."""
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     
@@ -257,7 +258,7 @@ def visualize_dataset_comparison(comparison_df, metrics, args):
             plt.close()
 
 
-def visualize_radar_comparison(results, metrics, args, dataset_name=None):
+def visualize_radar_comparison(results: Dict[str, Any], metrics: List[str], args: argparse.Namespace, dataset_name: Optional[str] = None) -> None:
     """Create radar chart comparing methods across metrics."""
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     
@@ -366,7 +367,7 @@ def visualize_radar_comparison(results, metrics, args, dataset_name=None):
     plt.close()
 
 
-def main():
+def main() -> None:
     """Main function to visualize causal inference results."""
     # Parse arguments
     args = parse_args()
