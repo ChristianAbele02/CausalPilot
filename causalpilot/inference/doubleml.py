@@ -282,13 +282,14 @@ class DoubleML(BaseEstimator):
             self.estimate_effect()
         
         # DoubleML gives constant treatment effect
-        if self.effect_estimate is None:
+        effect = self.effect_estimate
+        if effect is None:
              # Should not happen if estimate_effect is called, but for safety
-             return np.zeros(len(X_new), dtype=float)
+             return cast(np.ndarray, np.zeros(len(X_new), dtype=float))
         
-        result = np.zeros(len(X_new), dtype=float)
-        result.fill(self.effect_estimate)
-        return result
+        result: np.ndarray = np.zeros(len(X_new), dtype=float)
+        result.fill(effect)
+        return cast(np.ndarray, result)
     
     def predict(self, X: pd.DataFrame) -> np.ndarray:
         """
@@ -306,12 +307,13 @@ class DoubleML(BaseEstimator):
         if self.effect_estimate is None:
             self.estimate_effect()
 
-        if self.effect_estimate is None:
-             return np.zeros(len(X), dtype=float)
+        effect = self.effect_estimate
+        if effect is None:
+             return cast(np.ndarray, np.zeros(len(X), dtype=float))
         
-        result = np.zeros(len(X), dtype=float)
-        result.fill(self.effect_estimate)
-        return result
+        result: np.ndarray = np.zeros(len(X), dtype=float)
+        result.fill(effect)
+        return cast(np.ndarray, result)
 
     def __str__(self) -> str:
         """String representation of the estimator."""
