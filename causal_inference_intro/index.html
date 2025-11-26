@@ -1,0 +1,1215 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A comprehensive framework for causal inference testing with multiple estimators">
+      
+      
+      
+        <link rel="canonical" href="https://example.com/CausalPilot/causal_inference_intro/">
+      
+      
+        <link rel="prev" href="..">
+      
+      
+        <link rel="next" href="../estimator_theory/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0">
+    
+    
+      
+        <title>Introduction - CausalPilot</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.618322db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#statistical-introduction-to-causal-inference" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="CausalPilot" class="md-header__button md-logo" aria-label="CausalPilot" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            CausalPilot
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Introduction
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    <li class="md-tabs__item md-tabs__item--active">
+      <a href="./" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Introduction
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../estimator_theory/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Theory
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../api_documentation/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  API Reference
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="CausalPilot" class="md-nav__button md-logo" aria-label="CausalPilot" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    CausalPilot
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Introduction
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Introduction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#introduction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Introduction
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-the-fundamental-problem-of-causal-inference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. The Fundamental Problem of Causal Inference
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. The Fundamental Problem of Causal Inference">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#beyond-correlation-the-need-for-causal-thinking" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Beyond Correlation: The Need for Causal Thinking
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-missing-data-problem" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Missing Data Problem
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-frameworks-for-causal-inference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Frameworks for Causal Inference
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Frameworks for Causal Inference">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-potential-outcomes-framework-rubin-causal-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 Potential Outcomes Framework (Rubin Causal Model)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2.1 Potential Outcomes Framework (Rubin Causal Model)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#core-concepts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Core Concepts
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#key-estimands" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Estimands
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-structural-causal-models-and-causal-graphs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 Structural Causal Models and Causal Graphs
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2.2 Structural Causal Models and Causal Graphs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#causal-graphs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Causal Graphs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#path-analysis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Path Analysis
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-fundamental-identification-assumptions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Fundamental Identification Assumptions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Fundamental Identification Assumptions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-unconfoundedness-ignorability" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 Unconfoundedness (Ignorability)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-positivity-overlap" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 Positivity (Overlap)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-consistency-sutva" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3 Consistency (SUTVA)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3.3 Consistency (SUTVA)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#no-interference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        No Interference
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#treatment-variation-irrelevance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Treatment Variation Irrelevance
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-identification-strategies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Identification Strategies
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Identification Strategies">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-backdoor-criterion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 Backdoor Criterion
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4.1 Backdoor Criterion">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#algorithm-for-finding-adjustment-sets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Algorithm for Finding Adjustment Sets
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-instrumental-variables" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 Instrumental Variables
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-estimation-approaches" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Estimation Approaches
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Estimation Approaches">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51-regression-based-methods" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1 Regression-Based Methods
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52-propensity-score-methods" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2 Propensity Score Methods
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#53-modern-machine-learning-approaches" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.3 Modern Machine Learning Approaches
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-threats-to-causal-inference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Threats to Causal Inference
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Threats to Causal Inference">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#61-selection-bias" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1 Selection Bias
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#62-confounding" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.2 Confounding
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#63-post-treatment-bias" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.3 Post-Treatment Bias
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-sensitivity-analysis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Sensitivity Analysis
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. Sensitivity Analysis">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#71-unmeasured-confounding" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.1 Unmeasured Confounding
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#72-model-uncertainty" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.2 Model Uncertainty
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-study-design-considerations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Study Design Considerations
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8. Study Design Considerations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#81-randomized-experiments" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.1 Randomized Experiments
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#82-natural-experiments" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.2 Natural Experiments
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#83-observational-studies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.3 Observational Studies
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-software-implementations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Software Implementations
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#conclusion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Conclusion
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        References
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../estimator_theory/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Theory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api_documentation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="statistical-introduction-to-causal-inference">Statistical Introduction to Causal Inference</h1>
+<h2 id="introduction">Introduction</h2>
+<p>Causal inference represents one of the most fundamental challenges in statistics and data science: moving beyond correlation to establish true cause-and-effect relationships. In this document, I provide a comprehensive statistical introduction to causal inference, covering the theoretical foundations, key frameworks, and fundamental assumptions that underlie the methods I've implemented in CausalPilot.</p>
+<h2 id="1-the-fundamental-problem-of-causal-inference">1. The Fundamental Problem of Causal Inference</h2>
+<h3 id="beyond-correlation-the-need-for-causal-thinking">Beyond Correlation: The Need for Causal Thinking</h3>
+<p>Traditional statistical methods excel at identifying associations and correlations between variables. However, answering questions about the effects of interventions requires a fundamentally different approach. Consider these examples:</p>
+<ul>
+<li><strong>Predictive Question</strong>: What is the probability a patient will recover given they take medication X?</li>
+<li><strong>Causal Question</strong>: What would happen to the patient's recovery if we intervene and give them medication X?</li>
+</ul>
+<p>The key distinction lies in the counterfactual nature of causal questions: I seek to understand what would happen under different interventions, not just what I observe.</p>
+<h3 id="the-missing-data-problem">The Missing Data Problem</h3>
+<p>The fundamental challenge in causal inference stems from the fact that I can never observe what would have happened to the same unit under a different treatment condition. This is known as the "fundamental problem of causal inference".</p>
+<p>For each individual $i$:
+- I observe either $Y_i(1)$ (outcome under treatment) OR $Y_i(0)$ (outcome under control)
+- I never observe both potential outcomes for the same individual
+- The unobserved outcome represents missing data that cannot be recovered through repeated experiments</p>
+<h2 id="2-frameworks-for-causal-inference">2. Frameworks for Causal Inference</h2>
+<h3 id="21-potential-outcomes-framework-rubin-causal-model">2.1 Potential Outcomes Framework (Rubin Causal Model)</h3>
+<p>The potential outcomes framework provides a mathematical foundation for causal inference by explicitly modeling counterfactual outcomes.</p>
+<h4 id="core-concepts">Core Concepts</h4>
+<p><strong>Units</strong>: The entities (people, places, things) on which treatments operate at specific times.</p>
+<p><strong>Treatments</strong>: Interventions whose effects I wish to assess. For simplicity, consider binary treatment $T \in {0,1}$.</p>
+<p><strong>Potential Outcomes</strong>: For each unit $i$, I define:
+- $Y_i(1)$: Outcome if unit $i$ receives treatment ($T=1$)
+- $Y_i(0)$: Outcome if unit $i$ receives control ($T=0$)</p>
+<p><strong>Observed Outcome</strong>: What I actually observe:
+$$ Y_i = T_i \cdot Y_i(1) + (1 - T_i) \cdot Y_i(0) $$</p>
+<p><strong>Individual Treatment Effect</strong>: The causal effect for unit $i$:
+$$ \tau_i = Y_i(1) - Y_i(0) $$</p>
+<h4 id="key-estimands">Key Estimands</h4>
+<p><strong>Average Treatment Effect (ATE)</strong>:
+$$ ATE = E[Y_i(1) - Y_i(0)] = E[Y_i(1)] - E[Y_i(0)] $$</p>
+<p><strong>Average Treatment Effect on the Treated (ATT)</strong>:
+$$ ATT = E[Y_i(1) - Y_i(0) | T_i = 1] $$</p>
+<p><strong>Conditional Average Treatment Effect (CATE)</strong>:
+$$ CATE(x) = E[Y_i(1) - Y_i(0) | X_i = x] $$</p>
+<h3 id="22-structural-causal-models-and-causal-graphs">2.2 Structural Causal Models and Causal Graphs</h3>
+<p>The graphical approach to causation uses directed acyclic graphs (DAGs) to represent causal relationships and identify conditions under which causal effects can be estimated.</p>
+<h4 id="causal-graphs">Causal Graphs</h4>
+<p>A causal graph $G = (V, E)$ consists of:
+- <strong>Vertices (V)</strong>: Variables in the system
+- <strong>Directed Edges (E)</strong>: Direct causal relationships
+- <strong>DAG Property</strong>: No directed cycles (A cannot cause B which causes A)</p>
+<p><strong>Causal Interpretation</strong>: An edge $X \to Y$ means $X$ is a direct cause of $Y$, holding all other variables constant.</p>
+<h4 id="path-analysis">Path Analysis</h4>
+<ul>
+<li><strong>Causal Paths</strong>: Sequences of edges following the direction of arrows ($X \to Z \to Y$)</li>
+<li><strong>Backdoor Paths</strong>: Paths from treatment to outcome that begin with an arrow into the treatment</li>
+<li><strong>Confounding Paths</strong>: Backdoor paths that create spurious associations</li>
+</ul>
+<h2 id="3-fundamental-identification-assumptions">3. Fundamental Identification Assumptions</h2>
+<p>To move from observational data to causal conclusions, I must make untestable assumptions about the data-generating process.</p>
+<h3 id="31-unconfoundedness-ignorability">3.1 Unconfoundedness (Ignorability)</h3>
+<p><strong>Assumption</strong>: Treatment assignment is unconfounded given observed covariates $X$.</p>
+<p><strong>Mathematical Statement</strong>:
+$$ {Y_i(0), Y_i(1)} \perp T_i | X_i $$</p>
+<p><strong>Interpretation</strong>: Conditional on $X$, treatment assignment is as good as random—there are no unmeasured confounders affecting both treatment and outcome.</p>
+<p><strong>Plausibility</strong>: This is the most critical and often most questionable assumption. It requires:
+- All relevant confounders are observed and measured
+- No hidden bias from unmeasured variables
+- Complete understanding of the selection mechanism</p>
+<h3 id="32-positivity-overlap">3.2 Positivity (Overlap)</h3>
+<p><strong>Assumption</strong>: Every unit has positive probability of receiving any treatment level.</p>
+<p><strong>Mathematical Statement</strong>:
+$$ 0 &lt; P(T_i = t | X_i = x) &lt; 1 $$
+for all $t \in {0,1}$ and all $x$ in the support of $X$.</p>
+<p><strong>Interpretation</strong>: There is sufficient overlap between treatment groups across all covariate levels.</p>
+<p><strong>Violations</strong>: 
+- <strong>Structural violations</strong>: Some subgroups never receive treatment (e.g., men don't get pregnant)
+- <strong>Random violations</strong>: Small sample sizes lead to missing combinations</p>
+<h3 id="33-consistency-sutva">3.3 Consistency (SUTVA)</h3>
+<p>The Stable Unit Treatment Value Assumption (SUTVA) has two components:</p>
+<h4 id="no-interference">No Interference</h4>
+<p><strong>Assumption</strong>: Treatment of one unit doesn't affect outcomes of other units.</p>
+<p><strong>Mathematical Statement</strong>:
+$$ Y_i(t_1, ..., t_i, ..., t_n) = Y_i(t_i) $$</p>
+<p><strong>Violations</strong>: Network effects, spillovers, general equilibrium effects</p>
+<h4 id="treatment-variation-irrelevance">Treatment Variation Irrelevance</h4>
+<p><strong>Assumption</strong>: There is only one version of each treatment level.</p>
+<p><strong>Violations</strong>: Multiple versions of "treatment" with different effects</p>
+<h2 id="4-identification-strategies">4. Identification Strategies</h2>
+<h3 id="41-backdoor-criterion">4.1 Backdoor Criterion</h3>
+<p>The backdoor criterion provides a graphical method for identifying valid adjustment sets.</p>
+<p><strong>Definition</strong>: A set of variables $Z$ satisfies the backdoor criterion relative to treatment $T$ and outcome $Y$ if:
+1. $Z$ blocks all backdoor paths from $T$ to $Y$
+2. $Z$ contains no descendants of $T$</p>
+<p><strong>Adjustment Formula</strong>: If $Z$ satisfies the backdoor criterion:
+$$ P(Y(t)) = \sum_z P(Y | T = t, Z = z) P(Z = z) $$</p>
+<h4 id="algorithm-for-finding-adjustment-sets">Algorithm for Finding Adjustment Sets</h4>
+<ol>
+<li><strong>Identify all paths</strong> from treatment $T$ to outcome $Y$</li>
+<li><strong>Classify paths</strong> as front-door (causal) or backdoor (confounding)</li>
+<li><strong>Find blocking sets</strong> that close all backdoor paths without blocking front-door paths</li>
+<li><strong>Exclude descendants</strong> of the treatment to avoid post-treatment bias</li>
+</ol>
+<h3 id="42-instrumental-variables">4.2 Instrumental Variables</h3>
+<p>When unconfoundedness fails, instrumental variables can provide identification under different assumptions.</p>
+<p><strong>Definition</strong>: An instrument $Z$ for the effect of $T$ on $Y$ satisfies:
+1. <strong>Relevance</strong>: $Z$ affects $T$ (correlation condition)
+2. <strong>Exclusion</strong>: $Z$ affects $Y$ only through $T$ (exogeneity condition)<br />
+3. <strong>Monotonicity</strong>: $Z$ affects $T$ in the same direction for all units</p>
+<p><strong>Two-Stage Least Squares (2SLS)</strong>:
+1. <strong>First stage</strong>: Predict $T$ using $Z$
+2. <strong>Second stage</strong>: Use predicted $\hat{T}$ to estimate effect on $Y$</p>
+<h2 id="5-estimation-approaches">5. Estimation Approaches</h2>
+<h3 id="51-regression-based-methods">5.1 Regression-Based Methods</h3>
+<p><strong>Simple Regression Adjustment</strong>:
+$$ E[Y | T = 1, X] - E[Y | T = 0, X] $$</p>
+<p><strong>Challenges</strong>:
+- Requires correct specification of $E[Y | T, X]$
+- Sensitive to model misspecification
+- Parametric assumptions may be violated</p>
+<h3 id="52-propensity-score-methods">5.2 Propensity Score Methods</h3>
+<p><strong>Propensity Score</strong>: The probability of treatment given covariates:
+$$ e(x) = P(T = 1 | X = x) $$</p>
+<p><strong>Key Property</strong>: If unconfoundedness holds given $X$, it also holds given $e(X)$.</p>
+<p><strong>Estimation Methods</strong>:
+1. <strong>Matching</strong>: Match treated and control units with similar propensity scores
+2. <strong>Stratification</strong>: Group units into propensity score strata
+3. <strong>Weighting</strong>: Weight by inverse propensity scores (IPW)</p>
+<h3 id="53-modern-machine-learning-approaches">5.3 Modern Machine Learning Approaches</h3>
+<p><strong>Double/Debiased Machine Learning</strong>: Uses cross-fitting to estimate nuisance functions while maintaining valid inference.</p>
+<p><strong>Causal Forests</strong>: Extends random forests to estimate heterogeneous treatment effects.</p>
+<p><strong>Meta-learners</strong>: Use any supervised learning algorithm to estimate treatment effects.</p>
+<h2 id="6-threats-to-causal-inference">6. Threats to Causal Inference</h2>
+<h3 id="61-selection-bias">6.1 Selection Bias</h3>
+<p><strong>Problem</strong>: Systematic differences between treatment groups that affect outcomes.</p>
+<p><strong>Sources</strong>:
+- Self-selection into treatment
+- Non-random treatment assignment
+- Unmeasured confounding</p>
+<p><strong>Solutions</strong>: Randomization, natural experiments, instrumental variables</p>
+<h3 id="62-confounding">6.2 Confounding</h3>
+<p><strong>Problem</strong>: Variables that affect both treatment and outcome, creating spurious associations.</p>
+<p><strong>Types</strong>:
+- <strong>Measured confounding</strong>: Can be addressed through adjustment
+- <strong>Unmeasured confounding</strong>: Requires additional assumptions or design features</p>
+<h3 id="63-post-treatment-bias">6.3 Post-Treatment Bias</h3>
+<p><strong>Problem</strong>: Conditioning on variables affected by treatment can introduce bias.</p>
+<p><strong>Example</strong>: Studying effect of education on income while controlling for occupation (which education affects).</p>
+<p><strong>Solution</strong>: Only adjust for pre-treatment variables.</p>
+<h2 id="7-sensitivity-analysis">7. Sensitivity Analysis</h2>
+<p>Given the reliance on untestable assumptions, sensitivity analysis examines how conclusions change under assumption violations.</p>
+<h3 id="71-unmeasured-confounding">7.1 Unmeasured Confounding</h3>
+<p><strong>Rosenbaum Bounds</strong>: Quantify how strong unmeasured confounding would need to be to explain away the estimated effect.</p>
+<p><strong>Simulation-Based Approaches</strong>: Model specific confounding scenarios and assess robustness.</p>
+<h3 id="72-model-uncertainty">7.2 Model Uncertainty</h3>
+<p><strong>Cross-Validation</strong>: Assess stability across different model specifications.</p>
+<p><strong>Ensemble Methods</strong>: Combine multiple estimation approaches.</p>
+<h2 id="8-study-design-considerations">8. Study Design Considerations</h2>
+<h3 id="81-randomized-experiments">8.1 Randomized Experiments</h3>
+<p><strong>Gold Standard</strong>: Randomization ensures treatment assignment is independent of potential outcomes.</p>
+<p><strong>Advantages</strong>:
+- Eliminates selection bias
+- Balances measured and unmeasured confounders
+- Provides valid causal inference under minimal assumptions</p>
+<p><strong>Limitations</strong>:
+- May not be feasible or ethical
+- External validity concerns
+- Compliance issues</p>
+<h3 id="82-natural-experiments">8.2 Natural Experiments</h3>
+<p><strong>Quasi-Randomization</strong>: Exploit natural variation in treatment assignment.</p>
+<p><strong>Examples</strong>:
+- Regression discontinuity (arbitrary cutoffs)
+- Instrumental variables (plausibly exogenous variation)
+- Difference-in-differences (before/after, treatment/control)</p>
+<h3 id="83-observational-studies">8.3 Observational Studies</h3>
+<p><strong>Challenge</strong>: Must rely on stronger assumptions about selection mechanism.</p>
+<p><strong>Best Practices</strong>:
+- Careful measurement of potential confounders
+- Use of multiple identification strategies
+- Extensive sensitivity analysis
+- Theory-guided variable selection</p>
+<h2 id="9-software-implementations">9. Software Implementations</h2>
+<p>Modern causal inference benefits from specialized software that implements these methods:</p>
+<ul>
+<li><strong>DoWhy</strong>: Provides a four-step workflow (model, identify, estimate, refute)</li>
+<li><strong>CausalML</strong>: Focuses on machine learning approaches to heterogeneous effects</li>
+<li><strong>CausalInference</strong>: Classical propensity score and matching methods</li>
+<li><strong>CausalPilot</strong>: My unified framework for multiple estimation approaches</li>
+</ul>
+<h2 id="conclusion">Conclusion</h2>
+<p>Causal inference requires a careful combination of:
+1. <strong>Theoretical Understanding</strong>: Potential outcomes, graphs, identification assumptions
+2. <strong>Design Considerations</strong>: How to collect data that supports causal conclusions<br />
+3. <strong>Statistical Methods</strong>: Appropriate estimation techniques for the identification strategy
+4. <strong>Sensitivity Analysis</strong>: Assessment of robustness to assumption violations</p>
+<p>Success in causal inference depends more on credible identification strategies than on sophisticated estimation methods. The most important question is not "What is the fanciest method?" but rather "What assumptions am I making, and how plausible are they?".</p>
+<h2 id="references">References</h2>
+<ul>
+<li>Siebert, J. (2024). "Causal inference: An introduction." Fraunhofer IESE Blog.</li>
+<li>Pearl, J. (2010). "An Introduction to Causal Inference." Journal of Causal Inference.</li>
+<li>Pearl, J. (2009). "Causal inference in statistics: An overview." Statistical Science.</li>
+<li>Rubin, D. B. (2005). "Causal inference using potential outcomes." Journal of the American Statistical Association.</li>
+<li>Pearl, J. (1995). "Causal diagrams for empirical research." Biometrika.</li>
+<li>Holland, P. W. (1986). "Statistics and causal inference." Journal of the American Statistical Association.</li>
+<li>Shpitser, I. et al. "A complete identification procedure for causal effects." Proceedings of UAI.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.sections", "toc.integrate"], "search": "../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.e71a0d61.min.js"></script>
+      
+    
+  </body>
+</html>
