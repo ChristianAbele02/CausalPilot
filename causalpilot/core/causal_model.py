@@ -1,13 +1,18 @@
-"""
-CausalModel implementation for CausalPilot
-Main interface for causal inference tasks
-"""
-
 import pandas as pd
 import numpy as np
-from typing import Dict, List, Optional, Union, Any
+from typing import Dict, List, Optional, Union, Any, Tuple
+from pydantic import BaseModel, Field, validator
 from .causal_graph import CausalGraph
+from .llm_integration import CausalLLM
 
+class CausalModelConfig(BaseModel):
+    """Configuration for CausalModel using Pydantic."""
+    treatment: str
+    outcome: str
+    graph: Optional[Any] = None  # Cannot strictly type CausalGraph here due to circular imports potential
+    
+    class Config:
+        arbitrary_types_allowed = True
 
 class CausalModel:
     """
@@ -31,17 +36,55 @@ class CausalModel:
             outcome: Name of the outcome variable
             graph: Optional causal graph. If None, creates empty graph
         """
+        # Validate using Pydantic
+        self.config = CausalModelConfig(
+            treatment=treatment,
+            outcome=outcome,
+            graph=graph
+        )
+        
         self.data = data
-        self.treatment = treatment
-        self.outcome = outcome
-        self.graph = graph if graph is not None else CausalGraph()
+        self.treatment = self.config.treatment
+        self.outcome = self.config.outcome
+        self.graph = self.config.graph if self.config.graph is not None else CausalGraph()
         self.adjustment_set = None
         
-        # Validate inputs
-        self._validate_inputs()
+        self._validate_data()
         
-    def _validate_inputs(self) -> None:
-        """Validate input data and variable names."""
+    @classmethod
+    def from_natural_language(cls, 
+                              data: pd.DataFrame, 
+                              query: str, 
+                              api_key: Optional[str] = None) -> 'CausalModel':
+        """
+        Create a CausalModel from a natural language description.
+        
+        Args:
+            data: The dataset
+            query: Natural language query (e.g. "Does education cause higher income?")
+            api_key: Optional API key for LLM provider
+            
+        Returns:
+            Initialized CausalModel
+        """
+        llm = CausalLLM(api_key=api_key)
+        parsed = llm.parse_causal_query(query, list(data.columns))
+        
+        # Create graph
+        graph = CausalGraph()
+        graph.add_nodes(list(data.columns))
+        for u, v in parsed['edges']:
+            graph.add_edge(u, v)
+            
+        return cls(
+            data=data,
+            treatment=parsed['treatment'],
+            outcome=parsed['outcome'],
+            graph=graph
+        )
+        
+    def _validate_data(self) -> None:
+        """Validate input data."""
         if not isinstance(self.data, pd.DataFrame):
             raise TypeError("Data must be a pandas DataFrame")
             

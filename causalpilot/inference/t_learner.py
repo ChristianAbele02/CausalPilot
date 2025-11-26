@@ -7,10 +7,19 @@ import numpy as np
 import pandas as pd
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.base import clone
-from typing import Any, Optional, Dict
+from typing import Any, Optional, Dict, Union
+from pydantic import BaseModel, Field
+from ..core.base_estimator import BaseEstimator
 
+class TLearnerConfig(BaseModel):
+    """Configuration for TLearner estimator."""
+    base_estimator: Optional[Any] = None
+    random_state: int = 42
+    
+    class Config:
+        arbitrary_types_allowed = True
 
-class TLearner:
+class TLearner(BaseEstimator):
     """
     T-Learner estimator for treatment effect estimation.
     
@@ -19,20 +28,26 @@ class TLearner:
     effects by taking the difference in predictions.
     """
     
-    def __init__(self, base_estimator: Optional[Any] = None):
+    def __init__(self, base_estimator: Optional[Any] = None, random_state: int = 42):
         """
         Initialize T-Learner.
         
         Args:
             base_estimator: Base ML model to use (default: RandomForestRegressor)
+            random_state: Random state for reproducibility
         """
+        self.config = TLearnerConfig(
+            base_estimator=base_estimator,
+            random_state=random_state
+        )
+        
         def _resolve_model(model):
             if model is None:
-                return RandomForestRegressor(random_state=42)
+                return RandomForestRegressor(random_state=self.config.random_state)
             if isinstance(model, type):
-                return model(random_state=42)
+                return model(random_state=self.config.random_state)
             return model
-        self.base_estimator = _resolve_model(base_estimator)
+        self.base_estimator = _resolve_model(self.config.base_estimator)
 
         # Models for treatment and control
         self.model_treatment = None
@@ -55,6 +70,8 @@ class TLearner:
         Returns:
             Self for method chaining
         """
+        self.validate_inputs(X, T, Y)
+        
         # Convert to arrays
         X_array = X.values if isinstance(X, pd.DataFrame) else X
         T_array = T.values if isinstance(T, pd.Series) else T
@@ -109,10 +126,13 @@ class TLearner:
         self.individual_effects = y1_pred - y0_pred
         return self.individual_effects
     
-    def estimate_effect(self) -> float:
+    def estimate_effect(self, X: Optional[pd.DataFrame] = None) -> float:
         """
         Estimate average treatment effect.
         
+        Args:
+            X: Optional covariates (required if predict hasn't been called)
+            
         Returns:
             Average treatment effect
         """
@@ -120,7 +140,9 @@ class TLearner:
             raise RuntimeError("Model must be fitted before estimating effect")
         
         if self.individual_effects is None:
-            raise RuntimeError("Must call predict() before estimate_effect()")
+            if X is None:
+                raise ValueError("X must be provided if predict() hasn't been called yet")
+            self.predict(X)
         
         self.average_effect = np.mean(self.individual_effects)
         return self.average_effect

@@ -1,182 +1,105 @@
-# CausalPilot
+# CausalPilot 🚀
 
-![CausalPilot Logo](https://github.com/user-attachments/assets/7887c002-8653-4f8e-bdd1-0b96cd19f6fd)
+**A Next-Generation Causal AI Framework for Python**
 
-A comprehensive Python framework for causal inference testing with multiple estimators. CausalPilot provides a unified interface for causal effect estimation, comparison of different methods, and visualization of results.
+[![CI](https://github.com/ChristianAbele02/causalpilot/actions/workflows/ci.yml/badge.svg)](https://github.com/ChristianAbele02/causalpilot/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 
-## 🌟 Features
+## Why I Built CausalPilot
 
-- **Multiple Causal Estimators**: DoubleML, Causal Forest, T-Learner, S-Learner
-- **Unified API**: Consistent interface across all estimators
-- **Causal Graph Support**: Create and validate causal graphs with NetworkX integration
-- **Built-in Datasets**: IHDP, LaLonde, Twins datasets for benchmarking
-- **Comprehensive Testing**: Extensive test suite with comparison utilities
-- **Visualization Tools**: Plot causal graphs and treatment effects
-- **Production Ready**: Type hints, logging, and error handling
+As a data scientist, I often found myself frustrated with the state of causal inference tools. Academic libraries were powerful but hard to use, while industry tools often lacked rigor.
 
-## 🚀 Quick Start
+I built **CausalPilot** to bridge this gap. It combines state-of-the-art estimators (like DoubleML and Causal Forests) with a modern, developer-friendly experience. My goal is to make "Causal AI" accessible to everyone—from researchers to solo developers like myself.
+
+## Key Features
+
+- **🗣️ Natural Language Interface**: Describe your problem in English, and I'll build the causal model for you (Mock implementation).
+- **🤖 Advanced Estimators**:
+    - **DoubleML**: For high-dimensional confounding.
+    - **Causal Forests**: For finding *who* benefits most (heterogeneity).
+    - **X-Learner**: For unbalanced treatment groups.
+    - **Instrumental Variables (IV)**: For unobserved confounding.
+- **🛡️ Robustness Checks**: Built-in Refutation tests (Placebo, Random Cause) and Covariate Balance plots.
+- **✅ Production Ready**: Type-checked (mypy), tested (pytest), and CI/CD integrated.
+
+## Real-World Use Cases
+
+Here are a few ways you can use CausalPilot in the real world:
+
+### 1. Marketing Optimization 🛍️
+**Question**: "Did my email campaign actually cause sales to increase, or did I just email people who were going to buy anyway?"
+**Solution**: Use **DoubleML** or **X-Learner**.
+- **Treatment**: Received Email (0/1)
+- **Outcome**: Purchase Amount ($)
+- **Confounders**: Past purchases, age, location.
+- **Why CausalPilot?**: It handles the high-dimensional customer data that confuses simple A/B tests.
+
+### 2. Policy Evaluation 🎓
+**Question**: "Does a job training program increase wages?"
+**Solution**: Use **Instrumental Variables (IV2SLS)**.
+- **Problem**: "Motivation" is an unobserved confounder. Highly motivated people join the program AND get higher wages.
+- **Instrument**: Distance to the training center (affects joining, but not wages directly).
+- **Why CausalPilot?**: Standard regression would be biased. IV isolates the true causal effect.
+
+## Quick Start
 
 ### Installation
-
 ```bash
-pip install causalpilot
+git clone https://github.com/ChristianAbele02/causalpilot.git
+cd causalpilot
+pip install -r requirements.txt
+pip install -e .
 ```
 
-Or install with additional dependencies (if defined in your environment):
-
-```bash
-# For development (if supported)
-pip install causalpilot[dev]
-
-# For notebooks  (if supported)
-pip install causalpilot[notebooks]
-
-# For advanced models (if supported)
-pip install causalpilot[advanced]
-
-# Everything (if supported)
-pip install causalpilot[all]
-```
-
-### Basic Usage
-
-```python
-import causalpilot as cp
-from causalpilot.datasets import load_ihdp
-
-# Load sample data
-data = load_ihdp()
-
-# Create causal graph
-graph = cp.CausalGraph()
-graph.add_nodes(['treatment', 'outcome', 'confounder'])
-graph.add_edge('treatment', 'outcome')
-graph.add_edge('confounder', 'treatment')
-graph.add_edge('confounder', 'outcome')
-
-# Create causal model
-model = cp.CausalModel(
-    data=data,
-    treatment='treatment',
-    outcome='outcome', 
-    graph=graph
-)
-
-# Estimate causal effect
-effect = model.estimate_effect(method='doubleml')
-print(f"Estimated ATE: {effect:.3f}")
-
-# Compare multiple methods
-comparison = model.compare_estimators(['doubleml', 'causal_forest', 't_learner'])
-print(comparison)
-```
-
-## 📥 Using Your Own Data
-
-You can use your own dataset with CausalPilot by following these steps:
-
-1. **Prepare your data** as a pandas DataFrame (e.g., from CSV, Excel, or SQL).
-2. **Ensure your data includes** columns for treatment, outcome, and covariates (features).
-3. **Load your data** and use it with CausalPilot just like the example datasets.
+### Usage Example: Natural Language Interface
 
 ```python
 import pandas as pd
-import causalpilot as cp
+from causalpilot.core import CausalModel
 
-# Load your own data
-data = pd.read_csv('your_data.csv')
+# Load your data
+df = pd.read_csv('sales_data.csv')
 
-# Create a causal graph (customize as needed)
-graph = cp.CausalGraph()
-graph.add_nodes(['treatment', 'outcome', 'confounder'])
-graph.add_edge('treatment', 'outcome')
-graph.add_edge('confounder', 'treatment')
-graph.add_edge('confounder', 'outcome')
-
-# Create and fit the model
-model = cp.CausalModel(
-    data=data,
-    treatment='treatment',
-    outcome='outcome',
-    graph=graph
+# Initialize with Natural Language
+model = CausalModel.from_natural_language(
+    data=df,
+    query="I want to know if offering a discount (treatment) increases sales (outcome), controlling for seasonality and customer_age."
 )
 
-# Estimate causal effect
-effect = model.estimate_effect(method='doubleml')
-print(f"Estimated ATE: {effect:.3f}")
+# Estimate the effect
+result = model.estimate_effect(method='doubleml')
+print(f"Causal Effect: {result['ate']:.2f}")
 ```
 
-See the [notebooks](notebooks/) for more advanced examples and tips.
+### Usage Example: Instrumental Variables
 
-## 📊 Supported Estimators
+```python
+from causalpilot.inference.iv import IV2SLS
 
-| Method | Description | Best For |
-|--------|-------------|----------|
-| **DoubleML** | Double/Debiased Machine Learning | High-dimensional confounders |
-| **Causal Forest** | Random Forest for heterogeneous effects | Heterogeneous treatment effects |
-| **T-Learner** | Two separate models for treatment/control | Simple heterogeneous effects |
-| **S-Learner** | Single model with treatment as feature | Homogeneous effects |
+# X: Confounders, T: Treatment, Y: Outcome, Z: Instrument
+iv_model = IV2SLS()
+iv_model.fit(X, T, Y, Z=Z)
 
-## 🎯 Use Cases
-
-- **A/B Testing**: Estimate treatment effects with proper confounding adjustment
-- **Policy Evaluation**: Assess impact of interventions using observational data
-- **Medical Research**: Estimate treatment effects from clinical data
-- **Economics**: Evaluate policy interventions and their causal impacts
-- **Marketing**: Measure campaign effectiveness with causal methods
-
-## 📖 Documentation
-
-- **Getting Started**: [notebooks/01_causalpilot_tutorial.ipynb](notebooks/01_causalpilot_tutorial.ipynb)
-- **Advanced**: [notebooks/02_causalpilot_advanced.ipynb](notebooks/02_causalpilot_advanced.ipynb)  
-
-## 🛠 Development
-
-### Running Tests
-
-```bash
-pytest tests/
+print(f"True Causal Effect: {iv_model.estimate_effect():.3f}")
 ```
 
-### Code Formatting
+## Supported Estimators
 
-```bash
-black causalpilot/
-flake8 causalpilot/
-```
+| Estimator | Best For... |
+|-----------|-------------|
+| **DoubleML** | High-dimensional data, general purpose ATE. |
+| **Causal Forest** | Finding heterogeneous effects (CATE). |
+| **X-Learner** | Unbalanced groups (e.g., small treatment group). |
+| **IV2SLS** | Unobserved confounding (requires an instrument). |
+| **T-Learner** | Simple baseline for large datasets. |
 
-### Type Checking
+## Contributing
 
-```bash
-mypy causalpilot/
-```
+I welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for details on how to help.
 
-## 🤝 Contributing
-
-I welcome contributions! Please see my [Contributing Guidelines](CONTRIBUTING.md) for details.
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests
-5. Submit a pull request
-
-## 📄 License
+## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🙏 Acknowledgments
-
-- Inspired by the [DoWhy](https://github.com/py-why/dowhy) library
-- Built on top of [scikit-learn](https://scikit-learn.org/) and [NetworkX](https://networkx.org/)
-- Causal inference methods from academic literature
-
-## 📞 Support
-
-- **Issues**: [GitHub Issues](https://github.com/ChristianAbele02/causalpilot/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/ChristianAbele02/causalpilot/discussions)
-- **Email**: christian.abele@uni-bielefeld.de
-
 ---
-
-**Happy Causal Inference! 🎯**

@@ -7,11 +7,23 @@ import numpy as np
 import pandas as pd
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.model_selection import train_test_split
-from typing import Dict, List, Optional, Any
+from typing import Dict, List, Optional, Any, Union
+from pydantic import BaseModel, Field
 import warnings
+from ..core.base_estimator import BaseEstimator
 
+class CausalForestConfig(BaseModel):
+    """Configuration for CausalForest estimator."""
+    n_trees: int = Field(default=100, ge=1)
+    max_depth: Optional[int] = None
+    min_samples_split: int = Field(default=10, ge=2)
+    min_samples_leaf: int = Field(default=5, ge=1)
+    max_features: Union[str, int, float] = 'sqrt'
+    honest: bool = True
+    honest_fraction: float = Field(default=0.5, gt=0.0, lt=1.0)
+    random_state: int = 42
 
-class CausalForest:
+class CausalForest(BaseEstimator):
     """
     Causal Forest estimator for heterogeneous treatment effect estimation.
     
@@ -41,14 +53,16 @@ class CausalForest:
             honest_fraction: Fraction of data for honest estimation
             random_state: Random state for reproducibility
         """
-        self.n_trees = n_trees
-        self.max_depth = max_depth
-        self.min_samples_split = min_samples_split
-        self.min_samples_leaf = min_samples_leaf
-        self.max_features = max_features
-        self.honest = honest
-        self.honest_fraction = honest_fraction
-        self.random_state = random_state
+        self.config = CausalForestConfig(
+            n_trees=n_trees,
+            max_depth=max_depth,
+            min_samples_split=min_samples_split,
+            min_samples_leaf=min_samples_leaf,
+            max_features=max_features,
+            honest=honest,
+            honest_fraction=honest_fraction,
+            random_state=random_state
+        )
         
         # Storage for trees and data splits
         self.trees = []
@@ -61,7 +75,7 @@ class CausalForest:
         self.is_fitted = False
         
         # Set random seed
-        np.random.seed(random_state)
+        np.random.seed(self.config.random_state)
     
     def fit(self, X: pd.DataFrame, T: pd.Series, Y: pd.Series) -> 'CausalForest':
         """
@@ -75,6 +89,8 @@ class CausalForest:
         Returns:
             Self for method chaining
         """
+        self.validate_inputs(X, T, Y)
+        
         # Convert to numpy arrays
         X_array = X.values if isinstance(X, pd.DataFrame) else X
         T_array = T.values if isinstance(T, pd.Series) else T
@@ -95,13 +111,13 @@ class CausalForest:
         self.honest_indices = []
         
         # Build trees
-        for tree_idx in range(self.n_trees):
+        for tree_idx in range(self.config.n_trees):
             # Bootstrap sample
             bootstrap_indices = np.random.choice(n_samples, size=n_samples, replace=True)
             
-            if self.honest:
+            if self.config.honest:
                 # Split bootstrap sample for honest estimation
-                n_honest = int(len(bootstrap_indices) * self.honest_fraction)
+                n_honest = int(len(bootstrap_indices) * self.config.honest_fraction)
                 
                 tree_indices = bootstrap_indices[:n_honest]
                 honest_indices = bootstrap_indices[n_honest:]
@@ -153,9 +169,9 @@ class CausalForest:
             node.n_samples = len(indices_honest)
             
             # Check stopping criteria
-            if (len(indices_tree) < self.min_samples_split or 
-                len(indices_honest) < self.min_samples_split or
-                (self.max_depth is not None and depth >= self.max_depth)):
+            if (len(indices_tree) < self.config.min_samples_split or 
+                len(indices_honest) < self.config.min_samples_split or
+                (self.config.max_depth is not None and depth >= self.config.max_depth)):
                 
                 # Create leaf node
                 node.is_leaf = True
@@ -185,16 +201,23 @@ class CausalForest:
             best_score = -np.inf
             
             # Random feature selection
-            if self.max_features == 'sqrt':
+            if self.config.max_features == 'sqrt':
                 n_features_to_try = int(np.sqrt(X_cur_tree.shape[1]))
-            elif self.max_features == 'log2':
+            elif self.config.max_features == 'log2':
                 n_features_to_try = int(np.log2(X_cur_tree.shape[1]))
+            elif isinstance(self.config.max_features, int):
+                n_features_to_try = self.config.max_features
+            elif isinstance(self.config.max_features, float):
+                n_features_to_try = int(self.config.max_features * X_cur_tree.shape[1])
             else:
                 n_features_to_try = X_cur_tree.shape[1]
             
+            # Ensure at least one feature
+            n_features_to_try = max(1, min(n_features_to_try, X_cur_tree.shape[1]))
+
             features_to_try = np.random.choice(
                 X_cur_tree.shape[1], 
-                size=min(n_features_to_try, X_cur_tree.shape[1]), 
+                size=n_features_to_try, 
                 replace=False
             )
             
@@ -214,10 +237,10 @@ class CausalForest:
                     right_honest = indices_honest[X_honest[indices_honest, feature] > threshold]
                     
                     # Check minimum samples
-                    if (len(left_tree) < self.min_samples_leaf or 
-                        len(right_tree) < self.min_samples_leaf or
-                        len(left_honest) < self.min_samples_leaf or
-                        len(right_honest) < self.min_samples_leaf):
+                    if (len(left_tree) < self.config.min_samples_leaf or 
+                        len(right_tree) < self.config.min_samples_leaf or
+                        len(left_honest) < self.config.min_samples_leaf or
+                        len(right_honest) < self.config.min_samples_leaf):
                         continue
                     
                     # Calculate split score (simple variance reduction)
@@ -322,7 +345,7 @@ class CausalForest:
         n_samples = X_array.shape[0]
         
         # Get predictions from all trees
-        predictions = np.zeros((n_samples, self.n_trees))
+        predictions = np.zeros((n_samples, self.config.n_trees))
         
         for tree_idx, tree in enumerate(self.trees):
             for i in range(n_samples):
@@ -344,10 +367,13 @@ class CausalForest:
         
         return current_node.treatment_effect if current_node.treatment_effect is not None else 0.0
     
-    def estimate_effect(self) -> float:
+    def estimate_effect(self, X: Optional[pd.DataFrame] = None) -> float:
         """
         Estimate the average treatment effect.
         
+        Args:
+            X: Optional covariates (required if predict hasn't been called)
+            
         Returns:
             Average treatment effect across all observations
         """
@@ -355,7 +381,9 @@ class CausalForest:
             raise RuntimeError("Model must be fitted before estimating effect")
         
         if self.individual_effects is None:
-            raise RuntimeError("Must call predict() before estimate_effect()")
+            if X is None:
+                 raise ValueError("X must be provided if predict() hasn't been called yet")
+            self.predict(X)
         
         self.average_effect = np.mean(self.individual_effects)
         return self.average_effect
@@ -405,8 +433,8 @@ class CausalForest:
         
         results = {
             'method': 'CausalForest',
-            'n_trees': self.n_trees,
-            'honest': self.honest,
+            'n_trees': self.config.n_trees,
+            'honest': self.config.honest,
             'average_effect': self.average_effect,
             'individual_effects': self.individual_effects
         }
@@ -421,7 +449,7 @@ class CausalForest:
     def __str__(self) -> str:
         """String representation of the estimator."""
         status = "fitted" if self.is_fitted else "not fitted"
-        return f"CausalForest(n_trees={self.n_trees}, honest={self.honest}, status={status})"
+        return f"CausalForest(n_trees={self.config.n_trees}, honest={self.config.honest}, status={status})"
     
     def __repr__(self) -> str:
         """String representation of the estimator."""

@@ -8,11 +8,22 @@ import pandas as pd
 from sklearn.model_selection import KFold
 from sklearn.ensemble import RandomForestRegressor, RandomForestClassifier
 from sklearn.base import clone
-from typing import Any, Optional, Dict, List
+from typing import Any, Optional, Dict, List, Union
+from pydantic import BaseModel, Field
 import warnings
+from ..core.base_estimator import BaseEstimator
 
+class DoubleMLConfig(BaseModel):
+    """Configuration for DoubleML estimator."""
+    ml_l: Optional[Any] = None
+    ml_m: Optional[Any] = None
+    n_folds: int = Field(default=5, ge=2)
+    random_state: int = 42
+    
+    class Config:
+        arbitrary_types_allowed = True
 
-class DoubleML:
+class DoubleML(BaseEstimator):
     """
     Double/Debiased Machine Learning estimator for causal effect estimation.
     
@@ -34,18 +45,23 @@ class DoubleML:
             n_folds: Number of folds for cross-fitting
             random_state: Random state for reproducibility
         """
+        self.config = DoubleMLConfig(
+            ml_l=ml_l,
+            ml_m=ml_m,
+            n_folds=n_folds,
+            random_state=random_state
+        )
+        
         def _resolve_model(model, default_class):
             if model is None:
-                return default_class(n_estimators=100, random_state=random_state)
+                return default_class(n_estimators=100, random_state=self.config.random_state)
             if isinstance(model, type):
                 # It's a class, instantiate with defaults
-                return model(n_estimators=100, random_state=random_state)
+                return model(n_estimators=100, random_state=self.config.random_state)
             return model  # Already an instance
 
-        self.ml_l = _resolve_model(ml_l, RandomForestRegressor)
-        self.ml_m = _resolve_model(ml_m, RandomForestClassifier)
-        self.n_folds = n_folds
-        self.random_state = random_state
+        self.ml_l = _resolve_model(self.config.ml_l, RandomForestRegressor)
+        self.ml_m = _resolve_model(self.config.ml_m, RandomForestClassifier)
         
         # Model storage
         self.models_l = []
@@ -70,6 +86,8 @@ class DoubleML:
         Returns:
             Self for method chaining
         """
+        self.validate_inputs(X, T, Y)
+        
         # Convert inputs to numpy arrays for easier handling
         X_array = X.values if isinstance(X, pd.DataFrame) else X
         T_array = T.values if isinstance(T, pd.Series) else T
@@ -82,7 +100,7 @@ class DoubleML:
         self.residuals_t = np.zeros(n_samples)
         
         # Cross-fitting
-        kf = KFold(n_splits=self.n_folds, shuffle=True, random_state=self.random_state)
+        kf = KFold(n_splits=self.config.n_folds, shuffle=True, random_state=self.config.random_state)
         
         for fold, (train_idx, test_idx) in enumerate(kf.split(X_array)):
             # Split data
@@ -90,15 +108,10 @@ class DoubleML:
             T_train, T_test = T_array[train_idx], T_array[test_idx]
             Y_train, Y_test = Y_array[train_idx], Y_array[test_idx]
             
-            # Fit outcome model (E[Y|X,T])
+            # Fit outcome model (E[Y|X])
             model_l = clone(self.ml_l)
-
-            # Combine X and T for outcome prediction
-            XT_train = np.column_stack([X_train, T_train])
-            XT_test = np.column_stack([X_test, T_test])
-            
-            model_l.fit(XT_train, Y_train)
-            y_pred = model_l.predict(XT_test)
+            model_l.fit(X_train, Y_train)
+            y_pred = model_l.predict(X_test)
             
             # Fit treatment model (E[T|X])
             model_m = clone(self.ml_m)
@@ -122,10 +135,13 @@ class DoubleML:
         self.is_fitted = True
         return self
     
-    def estimate_effect(self) -> float:
+    def estimate_effect(self, X: Optional[pd.DataFrame] = None) -> float:
         """
         Estimate the average treatment effect (ATE).
         
+        Args:
+            X: Optional covariates (not used for ATE but kept for interface consistency)
+            
         Returns:
             Estimated average treatment effect
         """
@@ -227,7 +243,7 @@ class DoubleML:
             'ate': self.effect_estimate,
             'standard_error': self.standard_error,
             'confidence_interval': ci,
-            'n_folds': self.n_folds,
+            'n_folds': self.config.n_folds,
             'n_observations': len(self.residuals_y),
             'method': 'DoubleML'
         }
@@ -273,7 +289,7 @@ class DoubleML:
     def __str__(self) -> str:
         """String representation of the estimator."""
         status = "fitted" if self.is_fitted else "not fitted"
-        return f"DoubleML(n_folds={self.n_folds}, status={status})"
+        return f"DoubleML(n_folds={self.config.n_folds}, status={status})"
     
     def __repr__(self) -> str:
         """String representation of the estimator."""

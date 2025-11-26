@@ -13,6 +13,8 @@ from .doubleml import DoubleML
 from .causal_forest import CausalForest
 from .t_learner import TLearner
 from .s_learner import SLearner
+from .x_learner import XLearner
+from .iv import IV2SLS
 from .comparison import compare_estimators
 
 __all__ = [
@@ -20,5 +22,7 @@ __all__ = [
     'CausalForest',
     'TLearner',
     'SLearner',
+    'XLearner',
+    'IV2SLS',
     'compare_estimators',
 ]
