@@ -90,7 +90,7 @@ class IV2SLS(BaseEstimator):
         self.stage2_model.fit(XT_hat, Y_array)
         
         # The coefficient for T_hat is the last one (since we appended T_hat last)
-        self.effect_estimate = self.stage2_model.coef_[-1]
+        self.effect_estimate = float(self.stage2_model.coef_[-1])
         
         self.is_fitted = True
         

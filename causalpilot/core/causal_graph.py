@@ -4,7 +4,7 @@ Manages directed acyclic graphs (DAGs) for causal relationships
 """
 
 import networkx as nx
-from typing import List, Optional, Tuple
+from typing import List, Optional, Tuple, Dict, Any
 import matplotlib.pyplot as plt
 
 

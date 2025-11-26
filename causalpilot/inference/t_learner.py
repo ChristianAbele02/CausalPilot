@@ -58,7 +58,7 @@ class TLearner(BaseEstimator):
         self.average_effect: Optional[float] = None
         self.is_fitted: bool = False
     
-    def fit(self, X: pd.DataFrame, T: pd.Series, Y: pd.Series) -> 'TLearner':
+    def fit(self, X: pd.DataFrame, T: pd.Series, Y: pd.Series) -> Any:
         """
         Fit separate models for treatment and control groups.
         

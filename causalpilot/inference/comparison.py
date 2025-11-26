@@ -118,7 +118,7 @@ def evaluate_performance(results: Dict[str, Any],
         if 'error' in result:
             continue
             
-        row = {'method': method}
+        row: Dict[str, Any] = {'method': method}
         for metric in metrics:
             if metric in result:
                 row[metric] = result[metric]

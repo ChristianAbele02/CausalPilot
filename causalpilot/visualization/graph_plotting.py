@@ -10,7 +10,7 @@ import pandas as pd
 from typing import Optional, Dict, Any, List
 
 
-def plot_causal_graph(graph, 
+def plot_causal_graph(graph: Any, 
                      title: str = "Causal Graph",
                      node_color: str = 'lightblue',
                      edge_color: str = 'gray',

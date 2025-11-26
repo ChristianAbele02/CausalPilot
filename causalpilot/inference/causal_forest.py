@@ -148,7 +148,7 @@ class CausalForest(BaseEstimator):
         """Build a single causal tree with honest splitting."""
         
         class CausalTreeNode:
-            def __init__(self):
+            def __init__(self) -> None:
                 self.is_leaf = False
                 self.feature = None
                 self.threshold = None
@@ -317,7 +317,7 @@ class CausalForest(BaseEstimator):
             var_treated = np.var(y_treated) if len(y_treated) > 1 else 0
             var_control = np.var(y_control) if len(y_control) > 1 else 0
             
-            return len(y_treated) * var_treated + len(y_control) * var_control
+            return float(len(y_treated) * var_treated + len(y_control) * var_control)
         
         # Calculate variance before split
         var_parent = variance_reduction(T_parent, Y_parent)
