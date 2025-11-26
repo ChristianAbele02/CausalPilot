@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np
 from causalpilot.core.causal_model import CausalModel
 from causalpilot.core.causal_graph import CausalGraph
+from typing import List
 
 @pytest.fixture
 def sample_data():
