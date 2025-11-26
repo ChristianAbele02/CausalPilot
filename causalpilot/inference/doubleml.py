@@ -285,7 +285,7 @@ class DoubleML(BaseEstimator):
         if self.effect_estimate is None:
              # Should not happen if estimate_effect is called, but for safety
              return np.zeros(len(X_new))
-        return cast(np.ndarray, np.full(len(X_new), self.effect_estimate))
+        return np.zeros(len(X_new)) + self.effect_estimate  # type: ignore[no-any-return]
     
     def predict(self, X: pd.DataFrame) -> np.ndarray:
         """
@@ -308,7 +308,7 @@ class DoubleML(BaseEstimator):
         
         # The original code already handles the case where self.effect_estimate is None.
         # The return type is np.ndarray, so we should return an array.
-        return cast(np.ndarray, np.full(len(X), self.effect_estimate))
+        return np.zeros(len(X)) + self.effect_estimate  # type: ignore[no-any-return]
 
     def __str__(self) -> str:
         """String representation of the estimator."""
