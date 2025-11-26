@@ -68,11 +68,12 @@ class DoubleML(BaseEstimator):
         self.models_m = []
         
         # Results storage
-        self.residuals_y = None
-        self.residuals_t = None
-        self.effect_estimate = None
-        self.standard_error = None
-        self.is_fitted = False
+        # Results storage
+        self.residuals_y: Optional[np.ndarray] = None
+        self.residuals_t: Optional[np.ndarray] = None
+        self.effect_estimate: Optional[float] = None
+        self.standard_error: Optional[float] = None
+        self.is_fitted: bool = False
         
     def fit(self, X: pd.DataFrame, T: pd.Series, Y: pd.Series) -> 'DoubleML':
         """
@@ -149,14 +150,18 @@ class DoubleML(BaseEstimator):
             raise RuntimeError("Model must be fitted before estimating effect")
         
         # Compute ATE using the DML moment condition
-        numerator = np.sum(self.residuals_t * self.residuals_y)
-        denominator = np.sum(self.residuals_t ** 2)
+        # Compute ATE using the DML moment condition
+        if self.residuals_t is None or self.residuals_y is None:
+             raise RuntimeError("Residuals not computed. Model might not be fitted correctly.")
+
+        numerator: float = np.sum(self.residuals_t * self.residuals_y)
+        denominator: float = np.sum(self.residuals_t ** 2)
         
         if denominator == 0:
             warnings.warn("Denominator is zero in ATE calculation. Check treatment variation.")
             return 0.0
         
-        self.effect_estimate = numerator / denominator
+        self.effect_estimate = float(numerator / denominator)
         return self.effect_estimate
     
     def standard_error_calculation(self) -> float:
@@ -169,11 +174,14 @@ class DoubleML(BaseEstimator):
         if not self.is_fitted:
             raise RuntimeError("Model must be fitted before calculating standard error")
         
+        if self.residuals_y is None or self.residuals_t is None:
+             raise RuntimeError("Residuals not computed. Model might not be fitted correctly.")
+
         n = len(self.residuals_y)
         
         # Calculate the influence function
-        numerator = np.sum(self.residuals_t * self.residuals_y)
-        denominator = np.sum(self.residuals_t ** 2)
+        numerator: float = np.sum(self.residuals_t * self.residuals_y)
+        denominator: float = np.sum(self.residuals_t ** 2)
         
         if denominator == 0:
             return float('inf')
@@ -187,7 +195,7 @@ class DoubleML(BaseEstimator):
         variance = np.var(psi)
         
         # Standard error
-        self.standard_error = np.sqrt(variance / n)
+        self.standard_error = float(np.sqrt(variance / n))
         return self.standard_error
     
     def confidence_interval(self, alpha: float = 0.05) -> Dict[str, float]:
@@ -266,6 +274,9 @@ class DoubleML(BaseEstimator):
             self.estimate_effect()
         
         # DoubleML gives constant treatment effect
+        if self.effect_estimate is None:
+             # Should not happen if estimate_effect is called, but for safety
+             return np.zeros(len(X_new))
         return np.full(len(X_new), self.effect_estimate)
     
     def predict(self, X: pd.DataFrame) -> np.ndarray:
@@ -284,6 +295,8 @@ class DoubleML(BaseEstimator):
         if self.effect_estimate is None:
             self.estimate_effect()
 
+        if self.effect_estimate is None:
+             return np.zeros(len(X))
         return np.full(len(X), self.effect_estimate)
 
     def __str__(self) -> str:

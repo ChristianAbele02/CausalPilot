@@ -47,7 +47,7 @@ class CausalModel:
         self.treatment = self.config.treatment
         self.outcome = self.config.outcome
         self.graph = self.config.graph if self.config.graph is not None else CausalGraph()
-        self.adjustment_set = None
+        self.adjustment_set: Optional[List[str]] = None
         
         self._validate_data()
         
@@ -111,6 +111,10 @@ class CausalModel:
         self.adjustment_set = self.graph.get_backdoor_set(self.treatment, self.outcome)
         
         # Validate that adjustment variables exist in data
+        # self.adjustment_set is guaranteed to be a list by get_backdoor_set, but MyPy might need help
+        if self.adjustment_set is None:
+             self.adjustment_set = []
+
         missing_vars = [var for var in self.adjustment_set if var not in self.data.columns]
         if missing_vars:
             raise ValueError(f"Adjustment variables not found in data: {missing_vars}")

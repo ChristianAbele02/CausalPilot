@@ -65,19 +65,20 @@ class CausalForest(BaseEstimator):
         )
         
         # Storage for trees and data splits
-        self.trees = []
-        self.tree_indices = []
-        self.honest_indices = []
+        # Storage for trees and data splits
+        self.trees: List[Any] = []
+        self.tree_indices: List[np.ndarray] = []
+        self.honest_indices: List[np.ndarray] = []
         
         # Results storage
-        self.individual_effects = None
-        self.average_effect = None
-        self.is_fitted = False
+        self.individual_effects: Optional[np.ndarray] = None
+        self.average_effect: Optional[float] = None
+        self.is_fitted: bool = False
         
         # Set random seed
         np.random.seed(self.config.random_state)
     
-    def fit(self, X: pd.DataFrame, T: pd.Series, Y: pd.Series) -> 'CausalForest':
+    def fit(self, X: pd.DataFrame, T: pd.Series, Y: pd.Series, **kwargs: Any) -> 'CausalForest':
         """
         Fit the Causal Forest using honest splitting.
         
@@ -143,7 +144,7 @@ class CausalForest(BaseEstimator):
         self.is_fitted = True
         return self
     
-    def _build_causal_tree(self, X_tree, T_tree, Y_tree, X_honest, T_honest, Y_honest):
+    def _build_causal_tree(self, X_tree: np.ndarray, T_tree: np.ndarray, Y_tree: np.ndarray, X_honest: np.ndarray, T_honest: np.ndarray, Y_honest: np.ndarray) -> Any:
         """Build a single causal tree with honest splitting."""
         
         class CausalTreeNode:
@@ -295,7 +296,7 @@ class CausalForest(BaseEstimator):
         tree = build_tree(np.arange(n_tree), np.arange(n_honest))
         return tree
     
-    def _calculate_split_score(self, T_parent, Y_parent, T_left, Y_left, T_right, Y_right):
+    def _calculate_split_score(self, T_parent: np.ndarray, Y_parent: np.ndarray, T_left: np.ndarray, Y_left: np.ndarray, T_right: np.ndarray, Y_right: np.ndarray) -> float:
         """Calculate the score for a potential split."""
         def variance_reduction(T, Y):
             if len(T) == 0:
@@ -355,7 +356,7 @@ class CausalForest(BaseEstimator):
         self.individual_effects = np.mean(predictions, axis=1)
         return self.individual_effects
     
-    def _predict_single(self, tree, x):
+    def _predict_single(self, tree: Any, x: np.ndarray) -> float:
         """Predict treatment effect for a single observation using one tree."""
         current_node = tree
         
@@ -385,10 +386,10 @@ class CausalForest(BaseEstimator):
                  raise ValueError("X must be provided if predict() hasn't been called yet")
             self.predict(X)
         
-        self.average_effect = np.mean(self.individual_effects)
+        self.average_effect = float(np.mean(self.individual_effects))
         return self.average_effect
     
-    def plot_heterogeneity(self, X: pd.DataFrame, feature_name: str):
+    def plot_heterogeneity(self, X: pd.DataFrame, feature_name: str) -> None:
         """
         Plot treatment effect heterogeneity by a specific feature.
         

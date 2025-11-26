@@ -18,7 +18,7 @@ def plot_causal_graph(graph,
                      font_size: int = 12,
                      figsize: tuple = (10, 8),
                      layout: str = 'spring',
-                     save_path: Optional[str] = None):
+                     save_path: Optional[str] = None) -> None:
     """
     Plot a causal graph.
     
@@ -86,7 +86,7 @@ def plot_causal_graph(graph,
 def plot_treatment_effects(results: Dict[str, Any],
                           title: str = "Treatment Effect Estimates",
                           figsize: tuple = (10, 6),
-                          save_path: Optional[str] = None):
+                          save_path: Optional[str] = None) -> None:
     """
     Plot treatment effect estimates from multiple methods.
     
@@ -157,7 +157,7 @@ def plot_effect_distribution(individual_effects: np.ndarray,
                            average_effect: Optional[float] = None,
                            bins: int = 30,
                            figsize: tuple = (10, 6),
-                           save_path: Optional[str] = None):
+                           save_path: Optional[str] = None) -> None:
     """
     Plot the distribution of individual treatment effects.
     
@@ -212,7 +212,7 @@ def plot_heterogeneity_heatmap(X: pd.DataFrame,
                               feature2: str,
                               bins: int = 10,
                               figsize: tuple = (10, 8),
-                              save_path: Optional[str] = None):
+                              save_path: Optional[str] = None) -> None:
     """
     Plot a heatmap showing treatment effect heterogeneity across two features.
     
@@ -279,9 +279,9 @@ def plot_heterogeneity_heatmap(X: pd.DataFrame,
 
 
 def plot_method_comparison_radar(results: Dict[str, Any],
-                               metrics: List[str] = None,
+                               metrics: Optional[List[str]] = None,
                                figsize: tuple = (10, 8),
-                               save_path: Optional[str] = None):
+                               save_path: Optional[str] = None) -> None:
     """
     Create a radar chart comparing methods across multiple metrics.
     
@@ -302,7 +302,7 @@ def plot_method_comparison_radar(results: Dict[str, Any],
         return
     
     # Normalize metrics (0-1 scale)
-    normalized_data = {}
+    normalized_data: Dict[str, Dict[str, float]] = {}
     
     for metric in metrics:
         values = [result.get(metric, 0) for result in valid_results.values()]
@@ -361,7 +361,7 @@ def plot_method_comparison_radar(results: Dict[str, Any],
     plt.show()
 
 
-def plot_method_comparison(results: dict, metric: str = 'ate', title: str = 'Method Comparison'):
+def plot_method_comparison(results: dict, metric: str = 'ate', title: str = 'Method Comparison') -> None:
     """
     Plot a bar chart comparing methods on a given metric (e.g., ATE, runtime_seconds).
     Args:

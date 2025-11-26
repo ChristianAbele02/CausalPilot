@@ -16,7 +16,7 @@ class CausalGraph:
     and perform causal inference operations like finding backdoor adjustment sets.
     """
     
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialize an empty directed graph."""
         self.graph = nx.DiGraph()
         self.node_metadata = {}
@@ -118,11 +118,11 @@ class CausalGraph:
     
     def has_edge(self, source: str, target: str) -> bool:
         """Check if an edge exists between two nodes."""
-        return self.graph.has_edge(source, target)
+        return bool(self.graph.has_edge(source, target))
     
     def is_dag(self) -> bool:
         """Check if the graph is a directed acyclic graph."""
-        return nx.is_directed_acyclic_graph(self.graph)
+        return bool(nx.is_directed_acyclic_graph(self.graph))
     
     def topological_order(self) -> List[str]:
         """Return nodes in topological order."""
@@ -130,7 +130,7 @@ class CausalGraph:
             raise ValueError("Graph must be a DAG for topological ordering")
         return list(nx.topological_sort(self.graph))
     
-    def copy(self):
+    def copy(self) -> 'CausalGraph':
         """Create a copy of the causal graph."""
         new_graph = CausalGraph()
         new_graph.graph = self.graph.copy()

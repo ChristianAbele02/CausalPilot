@@ -13,7 +13,7 @@ import warnings
 def compare_estimators(X: pd.DataFrame, 
                       T: pd.Series, 
                       Y: pd.Series,
-                      methods: List[str] = None,
+                      methods: Optional[List[str]] = None,
                       true_ate: Optional[float] = None,
                       **kwargs) -> Dict[str, Any]:
     """
@@ -41,6 +41,7 @@ def compare_estimators(X: pd.DataFrame,
         
         try:
             # Import and initialize estimator
+            estimator: Any
             if method == 'doubleml':
                 from .doubleml import DoubleML
                 estimator = DoubleML(**kwargs)
@@ -97,7 +98,7 @@ def compare_estimators(X: pd.DataFrame,
 
 
 def evaluate_performance(results: Dict[str, Any], 
-                        metrics: List[str] = None) -> pd.DataFrame:
+                        metrics: Optional[List[str]] = None) -> pd.DataFrame:
     """
     Create a performance comparison table.
     
@@ -131,7 +132,7 @@ def evaluate_performance(results: Dict[str, Any],
 
 def plot_method_comparison(results: Dict[str, Any], 
                           metric: str = 'ate',
-                          title: Optional[str] = None):
+                          title: Optional[str] = None) -> None:
     """
     Plot comparison of methods by a specific metric.
     
@@ -172,7 +173,7 @@ def plot_method_comparison(results: Dict[str, Any],
     plt.show()
 
 
-def plot_effect_distributions(results: Dict[str, Any]):
+def plot_effect_distributions(results: Dict[str, Any]) -> None:
     """
     Plot distributions of individual treatment effects for each method.
     
@@ -221,7 +222,7 @@ def plot_effect_distributions(results: Dict[str, Any]):
 def bootstrap_comparison(X: pd.DataFrame,
                         T: pd.Series,
                         Y: pd.Series,
-                        methods: List[str] = None,
+                        methods: Optional[List[str]] = None,
                         n_bootstrap: int = 100,
                         sample_fraction: float = 0.8,
                         **kwargs) -> Dict[str, Any]:
@@ -243,7 +244,7 @@ def bootstrap_comparison(X: pd.DataFrame,
     if methods is None:
         methods = ['doubleml', 't_learner', 's_learner']
     
-    bootstrap_results = {method: [] for method in methods}
+    bootstrap_results: Dict[str, List[float]] = {method: [] for method in methods}
     
     n_samples = len(X)
     bootstrap_size = int(n_samples * sample_fraction)

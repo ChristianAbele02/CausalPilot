@@ -258,7 +258,7 @@ def visualize_dataset_comparison(comparison_df: pd.DataFrame, metrics: List[str]
             plt.close()
 
 
-def visualize_radar_comparison(results: Dict[str, Any], metrics: List[str], args: argparse.Namespace, dataset_name: Optional[str] = None) -> None:
+def visualize_radar_comparison(results: Dict[str, Any], metrics: Optional[List[str]], args: argparse.Namespace, dataset_name: Optional[str] = None) -> None:
     """Create radar chart comparing methods across metrics."""
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     
@@ -301,7 +301,7 @@ def visualize_radar_comparison(results: Dict[str, Any], metrics: List[str], args
             method_values[method] = values
     
     # Normalize values (0-1 scale)
-    normalized_values = {}
+    normalized_values: Dict[str, List[float]] = {}
     
     for i, metric in enumerate(valid_metrics):
         metric_values = [method_values[method][i] for method in method_values]
@@ -312,19 +312,19 @@ def visualize_radar_comparison(results: Dict[str, Any], metrics: List[str], args
             # All same, set to middle
             for method in method_values:
                 if method not in normalized_values:
-                    normalized_values[method] = [0] * len(valid_metrics)
+                    normalized_values[method] = [0.0] * len(valid_metrics)
                 normalized_values[method][i] = 0.5
         else:
             # Normalize
             for method in method_values:
                 if method not in normalized_values:
-                    normalized_values[method] = [0] * len(valid_metrics)
+                    normalized_values[method] = [0.0] * len(valid_metrics)
                 
                 # For runtime, lower is better (invert)
                 if 'runtime' in metric or 'time' in metric:
-                    normalized_values[method][i] = 1 - (method_values[method][i] - min_val) / (max_val - min_val)
+                    normalized_values[method][i] = float(1 - (method_values[method][i] - min_val) / (max_val - min_val))
                 else:
-                    normalized_values[method][i] = (method_values[method][i] - min_val) / (max_val - min_val)
+                    normalized_values[method][i] = float((method_values[method][i] - min_val) / (max_val - min_val))
     
     # Plot each method
     colors = ['blue', 'red', 'green', 'orange', 'purple']
