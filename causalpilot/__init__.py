@@ -2,7 +2,7 @@
 CausalPilot: A Modern Causal Inference Framework
 """
 
-__version__ = "1.0.0"
+__version__ = "2.0.0"
 __author__ = "CausalPilot Development Team"
 
 from causalpilot.core import CausalGraph, CausalModel

@@ -6,7 +6,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="causalpilot",
-    version="1.0.0",
+    version="2.0.0",
     author="Christian Abele",
     author_email="christian.abele@uni-bielefeld.de",
     description="A comprehensive framework for causal inference testing with multiple estimators",
