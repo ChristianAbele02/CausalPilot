@@ -188,7 +188,7 @@ class CausalForest(BaseEstimator):
                     if node.n_treated > 0 and node.n_control > 0:
                         y_treated_mean = np.mean(Y_cur_honest[treated_mask])
                         y_control_mean = np.mean(Y_cur_honest[control_mask])
-                        node.treatment_effect = y_treated_mean - y_control_mean
+                        node.treatment_effect = float(y_treated_mean - y_control_mean)
                     else:
                         node.treatment_effect = 0.0
                 else:
@@ -266,7 +266,7 @@ class CausalForest(BaseEstimator):
                     if np.sum(treated_mask) > 0 and np.sum(control_mask) > 0:
                         y_treated_mean = np.mean(Y_cur_honest[treated_mask])
                         y_control_mean = np.mean(Y_cur_honest[control_mask])
-                        node.treatment_effect = y_treated_mean - y_control_mean
+                        node.treatment_effect = float(y_treated_mean - y_control_mean)
                     else:
                         node.treatment_effect = 0.0
                 else:

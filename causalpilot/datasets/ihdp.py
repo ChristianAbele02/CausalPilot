@@ -157,7 +157,7 @@ def _generate_synthetic_ihdp(seed: int = 42) -> pd.DataFrame:
     return data
 
 
-def get_ihdp_benchmark_results():
+def get_ihdp_benchmark_results() -> Dict[str, Any]:
     """
     Return published benchmark results for the IHDP dataset (e.g., true ATE values for reference).
     Returns:

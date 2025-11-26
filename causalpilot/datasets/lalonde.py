@@ -187,7 +187,7 @@ def _generate_synthetic_lalonde(seed: int = 42, version: str = 'nsw') -> pd.Data
     
     return data
 
-def get_lalonde_benchmark_results():
+def get_lalonde_benchmark_results() -> Dict[str, Any]:
     """
     Return published benchmark results for the LaLonde dataset (e.g., true ATE values for reference).
     Returns:

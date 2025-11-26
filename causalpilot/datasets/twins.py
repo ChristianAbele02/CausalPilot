@@ -202,7 +202,7 @@ def _generate_synthetic_twins(seed: int = 42) -> pd.DataFrame:
     return df_no_counterfactual
 
 
-def get_twins_benchmark_results():
+def get_twins_benchmark_results() -> Dict[str, Any]:
     """
     Return published benchmark results for the Twins dataset (e.g., true ATE values for reference).
     Returns:
