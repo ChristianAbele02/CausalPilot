@@ -75,7 +75,7 @@ class DoubleML(BaseEstimator):
         self.standard_error: Optional[float] = None
         self.is_fitted: bool = False
         
-    def fit(self, X: pd.DataFrame, T: pd.Series, Y: pd.Series) -> Any:
+    def fit(self, X: pd.DataFrame, T: pd.Series, Y: pd.Series, **kwargs: Any) -> Any:
         """
         Fit the DoubleML estimator using cross-fitting.
         
@@ -298,10 +298,6 @@ class DoubleML(BaseEstimator):
         if self.effect_estimate is None:
              return np.zeros(len(X))
         
-        # MyPy still thinks self.residuals_y could be None here despite the check above in some flows, 
-        # or it's about the type of X_new. 
-        # But the error was "Argument 1 to "len" has incompatible type "Optional[ndarray[Any, Any]]"".
-        # So it's about self.residuals_y.
         # The original code already handles the case where self.effect_estimate is None.
         # The return type is np.ndarray, so we should return an array.
         return np.array(np.full(len(X), self.effect_estimate))

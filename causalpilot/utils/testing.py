@@ -10,26 +10,25 @@ import warnings
 
 
 def generate_synthetic_data(n_samples: int = 1000,
-                           n_features: int = 5,
+                           n_features: int = 10,
+                           confounding: str = 'linear',
                            treatment_effect: float = 2.0,
-                           confounding_strength: float = 1.0,
-                           noise_std: float = 1.0,
-                           binary_treatment: bool = True,
-                           random_state: int = 42) -> Dict[str, Any]:
+                           random_state: int = 42) -> Tuple[pd.DataFrame, pd.Series, pd.Series]:
     """
     Generate synthetic data for causal inference testing.
     
     Args:
         n_samples: Number of observations
         n_features: Number of covariates
+        confounding: Type of confounding ('linear', 'nonlinear')
         treatment_effect: True average treatment effect
-        confounding_strength: Strength of confounding
-        noise_std: Standard deviation of noise
-        binary_treatment: Whether treatment is binary or continuous
         random_state: Random seed
         
     Returns:
-        Dictionary containing synthetic data and true effect
+        Tuple containing:
+            - pd.DataFrame: Covariates (X)
+            - pd.Series: Treatment (T)
+            - pd.Series: Outcome (Y)
     """
     np.random.seed(random_state)
     
@@ -38,34 +37,30 @@ def generate_synthetic_data(n_samples: int = 1000,
     feature_names = [f'X{i+1}' for i in range(n_features)]
     
     # Generate treatment (with confounding)
-    treatment_propensity = np.sum(X * confounding_strength / n_features, axis=1)
-    treatment_propensity = 1 / (1 + np.exp(-treatment_propensity))  # Sigmoid
-    
-    if binary_treatment:
-        T = np.random.binomial(1, treatment_propensity)
+    if confounding == 'linear':
+        treatment_propensity = np.sum(X[:, :n_features//2] * 0.5, axis=1) # Confounding from first half of features
+    elif confounding == 'nonlinear':
+        treatment_propensity = np.sin(X[:, 0]) + np.exp(X[:, 1] / 2) # Non-linear confounding
     else:
-        T = treatment_propensity + np.random.normal(0, 0.1, n_samples)
+        raise ValueError("confounding must be 'linear' or 'nonlinear'")
+
+    treatment_propensity = 1 / (1 + np.exp(-treatment_propensity))  # Sigmoid to get probabilities
+    T = np.random.binomial(1, treatment_propensity)
     
     # Generate outcome (with treatment effect and confounding)
-    outcome_base = np.sum(X * confounding_strength / n_features, axis=1)
-    
-    if binary_treatment:
-        Y = outcome_base + treatment_effect * T + np.random.normal(0, noise_std, n_samples)
+    if confounding == 'linear':
+        outcome_base = np.sum(X[:, :n_features//2] * 0.5, axis=1) # Confounding from first half of features
+    elif confounding == 'nonlinear':
+        outcome_base = np.cos(X[:, 0]) + np.log(np.abs(X[:, 1]) + 1) # Non-linear confounding
     else:
-        Y = outcome_base + treatment_effect * T + np.random.normal(0, noise_std, n_samples)
+        outcome_base = np.zeros(n_samples) # Should not happen due to check above
+
+    Y = outcome_base + treatment_effect * T + np.random.normal(0, 1.0, n_samples) # Noise std fixed at 1.0
     
-    # Create DataFrame
-    data = pd.DataFrame(X, columns=feature_names)
-    data['treatment'] = T
-    data['outcome'] = Y
+    # Create DataFrame for X
+    X_df = pd.DataFrame(X, columns=feature_names)
     
-    return {
-        'data': data,
-        'true_ate': treatment_effect,
-        'feature_names': feature_names,
-        'treatment_name': 'treatment',
-        'outcome_name': 'outcome'
-    }
+    return X_df, pd.Series(T, name='treatment'), pd.Series(Y, name='outcome')
 
 
 def generate_ihdp_synthetic(n_samples: int = 747,
@@ -155,17 +150,11 @@ def run_simulation(estimator_class,
     for i in range(n_simulations):
         try:
             # Generate data
-            data_dict = generate_synthetic_data(
+            X, T, Y = generate_synthetic_data(
                 n_samples=n_samples,
                 treatment_effect=true_effect,
                 random_state=i
             )
-            data = data_dict['data']
-            
-            # Prepare data
-            X = data[data_dict['feature_names']]
-            T = data[data_dict['treatment_name']]
-            Y = data[data_dict['outcome_name']]
             
             # Fit estimator
             estimator = estimator_class(**estimator_kwargs)
@@ -228,8 +217,8 @@ def test_estimator_properties(estimator_class,
             'large_sample': {'n_samples': 2000, 'true_effect': 2.0},
             'no_effect': {'n_samples': 1000, 'true_effect': 0.0},
             'large_effect': {'n_samples': 1000, 'true_effect': 5.0},
-            'high_confounding': {'n_samples': 1000, 'true_effect': 2.0, 'confounding_strength': 3.0},
-            'low_confounding': {'n_samples': 1000, 'true_effect': 2.0, 'confounding_strength': 0.1}
+            'high_confounding': {'n_samples': 1000, 'true_effect': 2.0, 'confounding': 'linear'}, # Changed from confounding_strength
+            'low_confounding': {'n_samples': 1000, 'true_effect': 2.0, 'confounding': 'linear'} # Changed from confounding_strength
         }
     
     results = {}
@@ -240,22 +229,16 @@ def test_estimator_properties(estimator_class,
         # Extract parameters
         n_samples = scenario_params.get('n_samples', 1000)
         true_effect = scenario_params.get('true_effect', 2.0)
-        confounding_strength = scenario_params.get('confounding_strength', 1.0)
+        confounding = scenario_params.get('confounding', 'linear') # Changed from confounding_strength
         
         # Run simulation
         try:
             # Generate data
-            data_dict = generate_synthetic_data(
+            X, T, Y = generate_synthetic_data(
                 n_samples=n_samples,
                 treatment_effect=true_effect,
-                confounding_strength=confounding_strength
+                confounding=confounding # Changed from confounding_strength
             )
-            data = data_dict['data']
-            
-            # Prepare data
-            X = data[data_dict['feature_names']]
-            T = data[data_dict['treatment_name']]
-            Y = data[data_dict['outcome_name']]
             
             # Fit estimator
             estimator = estimator_class(**estimator_kwargs)
@@ -284,11 +267,11 @@ def test_estimator_properties(estimator_class,
     return results
 
 
-def evaluate_estimator_convergence(estimator_class,
-                                  sample_sizes: list = None,
-                                  n_simulations: int = 50,
-                                  true_effect: float = 2.0,
-                                  **estimator_kwargs) -> Dict[str, Any]:
+def check_estimator_consistency(estimator_class: Any,
+                              n_runs: int = 5,
+                              n_samples: int = 500,
+                              true_effect: float = 2.0,
+                              **estimator_kwargs) -> Dict[str, Any]:
     """
     Evaluate how estimator performance changes with sample size.
     

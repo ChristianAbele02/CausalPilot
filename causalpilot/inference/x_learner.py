@@ -76,7 +76,7 @@ class XLearner(BaseEstimator):
         self.individual_effects: Optional[np.ndarray] = None
         self.average_effect: Optional[float] = None
 
-    def fit(self, X: pd.DataFrame, T: pd.Series, Y: pd.Series) -> 'XLearner':
+    def fit(self, X: pd.DataFrame, T: pd.Series, Y: pd.Series, **kwargs: Any) -> Any:
         """Fit the X-Learner."""
         self.validate_inputs(X, T, Y)
         

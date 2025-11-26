@@ -8,6 +8,44 @@ import networkx as nx
 from typing import Dict, List, Any, Optional
 
 
+def validate_estimator_params(estimator_class: Any, params: Dict[str, Any]) -> List[str]:
+    """
+    Validate parameters for a given estimator class.
+
+    Args:
+        estimator_class: The estimator class (e.g., sklearn.linear_model.LogisticRegression).
+        params: A dictionary of parameters to validate.
+
+    Returns:
+        A list of strings, where each string describes an issue found.
+        Returns an empty list if no issues are found.
+    """
+    issues: List[str] = []
+    
+    # Check if estimator_class has a get_params method (common for sklearn estimators)
+    if not hasattr(estimator_class, 'get_params'):
+        issues.append(f"Estimator class {estimator_class.__name__} does not have a 'get_params' method.")
+        return issues # Cannot validate further without get_params
+    
+    # Instantiate the estimator to get default parameters
+    try:
+        estimator_instance = estimator_class()
+        valid_params = estimator_instance.get_params()
+    except Exception as e:
+        issues.append(f"Could not instantiate estimator {estimator_class.__name__}: {e}")
+        return issues
+
+    # Check if provided params are valid for the estimator
+    for param_name, param_value in params.items():
+        if param_name not in valid_params:
+            issues.append(f"Parameter '{param_name}' is not a valid parameter for {estimator_class.__name__}.")
+        # More sophisticated checks could be added here, e.g., type checking, range checking
+        # This would typically require inspecting the estimator's __init__ signature or documentation.
+        # For now, we only check if the parameter name exists.
+            
+    return issues
+
+
 def validate_data(data: pd.DataFrame,
                  treatment: str,
                  outcome: str,
@@ -72,13 +110,13 @@ def validate_data(data: pd.DataFrame,
     
     # Check for binary treatment
     if len(unique_treatments) == 2:
-        validation_results['treatment_type'] = True
+        validation_results['treatment_type'] = 'binary'
 
         # Check treatment values
         if not set(unique_treatments).issubset({0, 1}):
             validation_results['warnings'].append("Binary treatment not encoded as 0/1")
     else:
-        validation_results['treatment_type'] = False
+        validation_results['treatment_type'] = 'continuous'
 
     # Check for positivity (overlap)
     if validation_results['treatment_type'] == 'binary' and adjustment_set:
@@ -108,7 +146,7 @@ def validate_data(data: pd.DataFrame,
     return validation_results
 
 
-def validate_graph(graph) -> Dict[str, Any]:
+def validate_graph(graph: Any) -> Dict[str, Any]:
     """
     Validate a causal graph.
     
@@ -160,7 +198,7 @@ def validate_graph(graph) -> Dict[str, Any]:
     return validation_results
 
 
-def check_common_causes(graph, treatment: str, outcome: str) -> List[str]:
+def check_common_causes(graph: Any, treatment: str, outcome: str) -> List[str]:
     """
     Find common causes of treatment and outcome.
     
@@ -196,7 +234,7 @@ def check_common_causes(graph, treatment: str, outcome: str) -> List[str]:
     return list(common_causes)
 
 
-def check_backdoor_path(graph, treatment: str, outcome: str) -> Dict[str, Any]:
+def check_backdoor_path(graph: Any, treatment: str, outcome: str) -> Dict[str, Any]:
     """
     Check for backdoor paths between treatment and outcome.
     

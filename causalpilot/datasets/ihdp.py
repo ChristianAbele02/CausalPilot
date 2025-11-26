@@ -6,14 +6,14 @@ Functions to load and process the Infant Health and Development Program dataset
 import numpy as np
 import pandas as pd
 import os
-from typing import Dict, Optional
+from typing import Dict, Optional, Tuple
 import warnings
 
 
 def load_ihdp(cache_dir: Optional[str] = None, 
              version: str = 'npci',
-             download: bool = True,
-             seed: int = 42) -> pd.DataFrame:
+             download_if_missing: bool = True,
+             seed: int = 42) -> Tuple[pd.DataFrame, pd.Series, pd.Series]:
     """
     Load the Infant Health and Development Program (IHDP) dataset.
     

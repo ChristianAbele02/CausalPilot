@@ -54,7 +54,7 @@ class SLearner(BaseEstimator):
         self.average_effect: Optional[float] = None
         self.is_fitted: bool = False
     
-    def fit(self, X: pd.DataFrame, T: pd.Series, Y: pd.Series) -> Any:
+    def fit(self, X: pd.DataFrame, T: pd.Series, Y: pd.Series, **kwargs: Any) -> Any:
         """
         Fit single model with treatment as feature.
         

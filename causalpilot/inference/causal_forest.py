@@ -149,15 +149,15 @@ class CausalForest(BaseEstimator):
         
         class CausalTreeNode:
             def __init__(self) -> None:
-                self.is_leaf = False
-                self.feature = None
-                self.threshold = None
-                self.left = None
-                self.right = None
-                self.treatment_effect = None
-                self.n_samples = 0
-                self.n_treated = 0
-                self.n_control = 0
+                self.is_leaf: bool = False
+                self.feature: Optional[int] = None
+                self.threshold: Optional[float] = None
+                self.left: Optional['CausalTreeNode'] = None
+                self.right: Optional['CausalTreeNode'] = None
+                self.treatment_effect: Optional[float] = None
+                self.n_samples: int = 0
+                self.n_treated: int = 0
+                self.n_control: int = 0
         
         def build_tree(indices_tree: np.ndarray, indices_honest: np.ndarray, depth: int = 0) -> CausalTreeNode:
             node = CausalTreeNode()

@@ -6,13 +6,13 @@ Functions to load and process the LaLonde dataset
 import numpy as np
 import pandas as pd
 import os
-from typing import Dict, Optional
+from typing import Dict, Optional, Tuple
 import warnings
 
 
 def load_lalonde(cache_dir: Optional[str] = None, 
                 version: str = 'nsw',
-                download: bool = True,
+                download_if_missing: bool = True,
                 seed: int = 42) -> pd.DataFrame:
     """
     Load the LaLonde dataset for causal inference.
