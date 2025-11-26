@@ -110,7 +110,7 @@ dmypy.json
 # Data Science / Machine Learning specific
 # Datasets
 data/
-causalpilot/datasets/
+
 *.csv
 *.tsv
 *.json
