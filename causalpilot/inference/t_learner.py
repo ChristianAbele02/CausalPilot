@@ -147,6 +147,9 @@ class TLearner(BaseEstimator):
                 raise ValueError("X must be provided if predict() hasn't been called yet")
             self.predict(X)
         
+        if self.individual_effects is None:
+            raise RuntimeError("Failed to predict individual effects")
+
         self.average_effect = float(np.mean(self.individual_effects))
         return self.average_effect
     

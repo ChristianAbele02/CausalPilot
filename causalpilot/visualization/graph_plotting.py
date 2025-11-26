@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import networkx as nx
 import numpy as np
 import pandas as pd
-from typing import Optional, Dict, Any, List
+from typing import Optional, Dict, Any, List, Tuple, cast
 
 
 def plot_causal_graph(graph: Any, 
@@ -49,7 +49,7 @@ def plot_causal_graph(graph: Any,
         return
     
     # Set up the plot
-    plt.figure(figsize=tuple(map(float, figsize)))
+    plt.figure(figsize=cast(Tuple[float, float], tuple(map(float, figsize))))
 
     # Choose layout
     if layout == 'spring':
@@ -123,7 +123,7 @@ def plot_treatment_effects(results: Dict[str, Any],
         return
     
     # Create the plot
-    plt.figure(figsize=tuple(map(float, figsize)))
+    plt.figure(figsize=cast(Tuple[float, float], tuple(map(float, figsize))))
 
     # Create bar plot with error bars
     bars = plt.bar(methods, effects, yerr=errors, capsize=5, alpha=0.7)
@@ -169,7 +169,7 @@ def plot_effect_distribution(individual_effects: np.ndarray,
         figsize: Figure size
         save_path: Optional path to save the plot
     """
-    plt.figure(figsize=tuple(map(float, figsize)))
+    plt.figure(figsize=cast(Tuple[float, float], tuple(map(float, figsize))))
 
     # Create histogram
     plt.hist(individual_effects, bins=bins, alpha=0.7, edgecolor='black', color='skyblue')
@@ -245,7 +245,7 @@ def plot_heterogeneity_heatmap(X: pd.DataFrame,
                 count_grid[j, i] = np.sum(mask)
     
     # Create the plot
-    plt.figure(figsize=tuple(map(float, figsize)))
+    plt.figure(figsize=cast(Tuple[float, float], tuple(map(float, figsize))))
 
     # Create heatmap
     im = plt.imshow(effect_grid, cmap='RdBu_r', aspect='auto')

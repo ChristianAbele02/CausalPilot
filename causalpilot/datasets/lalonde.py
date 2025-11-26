@@ -141,7 +141,7 @@ def _generate_synthetic_lalonde(seed: int = 42, version: str = 'nsw') -> pd.Data
             treatment[indices_to_change] = 1
     
     # Generate outcomes with treatment effect
-    treatment_effect = 1794  # Dollars, based on literature
+    treatment_effect: Any = 1794  # Dollars, based on literature
     
     # Heterogeneous treatment effect (higher for less educated)
     if version == 'nsw':
