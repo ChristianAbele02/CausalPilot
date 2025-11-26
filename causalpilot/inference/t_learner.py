@@ -162,6 +162,6 @@ class TLearner(BaseEstimator):
         }
         
         if self.individual_effects is not None:
-            results['effect_std'] = np.std(self.individual_effects)
+            results['effect_std'] = float(np.std(self.individual_effects))
             
         return results

@@ -119,7 +119,7 @@ class IV2SLS(BaseEstimator):
             s2 = LinearRegression(fit_intercept=self.config.fit_intercept).fit(XT_hat_b, Y_b)
             estimates.append(s2.coef_[-1])
             
-        self.standard_error = np.std(estimates)
+        self.standard_error = float(np.std(estimates))
 
     def estimate_effect(self, X: Optional[pd.DataFrame] = None) -> float:
         """

@@ -8,7 +8,7 @@ import pandas as pd
 from sklearn.model_selection import KFold
 from sklearn.ensemble import RandomForestRegressor, RandomForestClassifier
 from sklearn.base import clone
-from typing import Any, Optional, Dict, List, Union
+from typing import Any, Optional, Dict, List, Union, cast
 from pydantic import BaseModel, Field
 import warnings
 from ..core.base_estimator import BaseEstimator
@@ -285,7 +285,7 @@ class DoubleML(BaseEstimator):
         if self.effect_estimate is None:
              # Should not happen if estimate_effect is called, but for safety
              return np.zeros(len(X_new))
-        return np.array(np.full(len(X_new), self.effect_estimate))
+        return cast(np.ndarray, np.full(len(X_new), self.effect_estimate))
     
     def predict(self, X: pd.DataFrame) -> np.ndarray:
         """
@@ -308,7 +308,7 @@ class DoubleML(BaseEstimator):
         
         # The original code already handles the case where self.effect_estimate is None.
         # The return type is np.ndarray, so we should return an array.
-        return np.array(np.full(len(X), self.effect_estimate))
+        return cast(np.ndarray, np.full(len(X), self.effect_estimate))
 
     def __str__(self) -> str:
         """String representation of the estimator."""
